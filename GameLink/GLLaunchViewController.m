@@ -37,6 +37,12 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
     GLStateStreamEnded,
 };
 
+typedef NS_ENUM(NSInteger, GLStreamingState) {
+    GLStreamingStateSuspended = 0,  ///< Needs reactivation on resume
+    GLStreamingStateInactive,       ///< Should not auto reactivate
+    GLStreamingStateActive,         ///< Is currently active
+};
+
 @implementation GLLaunchViewController {
     // UI elements (built in code)
     UIView*                   _overlayView;
@@ -55,7 +61,7 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
     NSString*                 _uniqueId;
     UIAlertController*        _pairAlert;
     GLConnectionState         _state;
-    BOOL                      _streamingActive;
+    GLStreamingState          _streamingState;
 }
 
 #pragma mark - View Lifecycle
@@ -100,21 +106,15 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
 
-    if (_streamingActive) {
-        _streamingActive = NO;
+    // Returning from stream or settings is handled by viewWillAppear/settingsDidSave.
+    if (_streamingState == GLStreamingStateActive) {
+        _streamingState = GLStreamingStateInactive;
         [self showStreamEndedState];
     }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-
-//    if (!_hasAppeared) {
-//        // First appearance: kick off the initial connection attempt.
-//        _hasAppeared = YES;
-//        [self startConnection];
-//    }
-    // Returning from stream or settings is handled by viewWillAppear/settingsDidSave.
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -326,7 +326,7 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
         [self prepareStreamConfigForApp:appToStream];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            self->_streamingActive = YES;
+            self->_streamingState = GLStreamingStateActive;
             [self performSegueWithIdentifier:@"createStreamFrame" sender:nil];
         });
     });
@@ -413,7 +413,7 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
 #pragma mark - Backgrounding
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    if (_streamingActive) return;
+    if (_streamingState != GLStreamingStateSuspended) return;
     
     Log(LOG_I, @"GameLink activating -- starting connection");
     [self startConnection];
@@ -422,7 +422,7 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
 // This fires when the home button is pressed. If we're actively streaming,
 // tell the host to quit the running app so it doesn't stay occupied.
 - (void)applicationDidEnterBackground:(NSNotification *)notification {
-    if (!_streamingActive || _streamConfig == nil) {
+    if (_streamingState != GLStreamingStateActive || _streamConfig == nil) {
         return;
     }
 
@@ -430,14 +430,15 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
     // Block until the quit request finishes; otherwise iOS tears the app down
     // before the request is sent and the host is left occupied.
     [self quitHostAppAndWait:YES];
+    _streamingState = GLStreamingStateSuspended;
 }
 
 // NOTE: applicationDidEnterBackground is called before this one
 - (void)applicationWillTerminate:(NSNotification *)notification {
-    if (!_streamingActive || _streamConfig == nil) {
+    if (_streamingState != GLStreamingStateActive || _streamConfig == nil) {
         return;
     }
-    
+
     Log(LOG_I, @"Application terminating -- quitting host app");
     // Block until the quit request finishes; otherwise iOS tears the app down
     // before the request is sent and the host is left occupied.

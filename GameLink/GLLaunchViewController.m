@@ -15,6 +15,8 @@
 #import "TemporaryHost.h"
 #import "TemporaryApp.h"
 #import "HttpManager.h"
+#import "HttpRequest.h"
+#import "HttpResponse.h"
 #import "ServerInfoResponse.h"
 #import "AppListResponse.h"
 #import "ConnectionHelper.h"
@@ -70,9 +72,31 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
 
     [self buildOverlayUI];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
+
+    // Connect to host when GameLink becomes active.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(applicationDidBecomeActive:)
+                                                 name: UIApplicationDidBecomeActiveNotification
+                                               object: nil];
+    
+    // Quit the host app when GameLink is backgrounded or terminated during an active stream.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(applicationDidEnterBackground:)
+                                                 name: UIApplicationDidEnterBackgroundNotification
+                                               object: nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillTerminate:)
+                                                 name:UIApplicationWillTerminateNotification
+                                               object:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    Log(LOG_I, @"viewWillAppear -- ");
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
 
@@ -85,11 +109,11 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
-    if (!_hasAppeared) {
-        // First appearance: kick off the initial connection attempt.
-        _hasAppeared = YES;
-        [self startConnection];
-    }
+//    if (!_hasAppeared) {
+//        // First appearance: kick off the initial connection attempt.
+//        _hasAppeared = YES;
+//        [self startConnection];
+//    }
     // Returning from stream or settings is handled by viewWillAppear/settingsDidSave.
 }
 
@@ -383,6 +407,75 @@ typedef NS_ENUM(NSInteger, GLConnectionState) {
     if ([segue.destinationViewController isKindOfClass:[StreamFrameViewController class]]) {
         StreamFrameViewController* streamVC = segue.destinationViewController;
         streamVC.streamConfig = _streamConfig;
+    }
+}
+
+#pragma mark - Backgrounding
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+    if (_streamingActive) return;
+    
+    Log(LOG_I, @"GameLink activating -- starting connection");
+    [self startConnection];
+}
+
+// This fires when the home button is pressed. If we're actively streaming,
+// tell the host to quit the running app so it doesn't stay occupied.
+- (void)applicationDidEnterBackground:(NSNotification *)notification {
+    if (!_streamingActive || _streamConfig == nil) {
+        return;
+    }
+
+    Log(LOG_I, @"GameLink backgrounded -- quitting host app");
+    // Block until the quit request finishes; otherwise iOS tears the app down
+    // before the request is sent and the host is left occupied.
+    [self quitHostAppAndWait:YES];
+}
+
+// NOTE: applicationDidEnterBackground is called before this one
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    if (!_streamingActive || _streamConfig == nil) {
+        return;
+    }
+    
+    Log(LOG_I, @"Application terminating -- quitting host app");
+    // Block until the quit request finishes; otherwise iOS tears the app down
+    // before the request is sent and the host is left occupied.
+    [self quitHostAppAndWait:YES];
+}
+
+- (void)quitHostAppAndWait:(BOOL)wait {
+    NSString* host = [_streamConfig.host copy];
+    unsigned short httpsPort = _streamConfig.httpsPort;
+    NSData* serverCert = [_streamConfig.serverCert copy];
+
+    dispatch_semaphore_t sema = wait ? dispatch_semaphore_create(0) : NULL;
+
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        HttpManager* httpManager =
+            [[HttpManager alloc] initWithAddress:host
+                                       httpsPort:httpsPort
+                                      serverCert:serverCert];
+
+        HttpResponse* response = [[HttpResponse alloc] init];
+
+        HttpRequest* request =
+            [HttpRequest requestForResponse:response
+                             withUrlRequest:[httpManager newQuitAppRequest]];
+
+        [httpManager executeRequestSynchronously:request];
+
+        Log(LOG_I, @"Quit host app response: %d", response.statusCode);
+
+        if (sema != NULL) {
+            dispatch_semaphore_signal(sema);
+        }
+    });
+
+    if (wait) {
+        // Bounded by the underlying URL request timeout, so this won't hang
+        // indefinitely and keep iOS from terminating us.
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     }
 }
 

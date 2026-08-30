@@ -84,6 +84,10 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
 }
 
 - (void) discoverHost {
+    [self discoverHostWithError:NULL];
+}
+
+- (BOOL) discoverHostWithError:(NSString **)error {
     BOOL receivedResponse = NO;
     NSArray *addresses = [self getHostAddressList];
     
@@ -97,11 +101,11 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
                 // Get out without updating the status because
                 // it might not have finished checking the various
                 // addresses
-                return;
+                return FALSE;
             }
             
             ServerInfoResponse* serverInfoResp = [self requestInfoAtAddress:address cert:_host.serverCert];
-            receivedResponse = [self checkResponse:serverInfoResp];
+            receivedResponse = [self checkResponse:serverInfoResp error:error];
             if (receivedResponse) {
                 _host.activeAddress = address;
                 [serverInfoResp populateHost:_host];
@@ -123,6 +127,8 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
     if (receivedResponse) {
         Log(LOG_D, @"Received response from: %@\n{\n\t address:%@ \n\t localAddress:%@ \n\t externalAddress:%@ \n\t ipv6Address:%@ \n\t uuid:%@ \n\t mac:%@ \n\t pairState:%d \n\t online:%d \n\t activeAddress:%@ \n}", _host.name, _host.address, _host.localAddress, _host.externalAddress, _host.ipv6Address, _host.uuid, _host.mac, _host.pairState, _host.state, _host.activeAddress);
     }
+    
+    return receivedResponse;
 }
 
 - (ServerInfoResponse*) requestInfoAtAddress:(NSString*)address cert:(NSData*)cert {
@@ -135,14 +141,22 @@ static const float POLL_RATE = 2.0f; // Poll every 2 seconds
 }
 
 - (BOOL) checkResponse:(ServerInfoResponse*)response {
+    return [self checkResponse:response error:NULL];
+}
+
+- (BOOL) checkResponse:(ServerInfoResponse*)response error:(NSString **)error {
     if ([response isStatusOk]) {
         // If the response is from a different host then do not update this host
         if ((_host.uuid == nil || [[response getStringTag:TAG_UNIQUE_ID] isEqualToString:_host.uuid])) {
             return YES;
         } else {
             Log(LOG_I, @"Received response from incorrect host: %@ expected: %@", [response getStringTag:TAG_UNIQUE_ID], _host.uuid);
+            if (error) *error = @"Responce id mismatch";
         }
+    } else if (error){
+        *error = response.statusMessage;
     }
+
     return NO;
 }
 

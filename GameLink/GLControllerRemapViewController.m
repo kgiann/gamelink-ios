@@ -7,6 +7,12 @@
 #import "GLControllerNavigator.h"
 #import "ControllerButtonRemap.h"
 
+#if TARGET_OS_TV
+#define GL_GROUPED_TABLE_STYLE UITableViewStyleGrouped
+#else
+#define GL_GROUPED_TABLE_STYLE UITableViewStyleInsetGrouped
+#endif
+
 #pragma mark - Physical button picker
 
 // Pushed selection list of physical buttons (+ None). Reports the picked flag
@@ -22,7 +28,7 @@
 }
 
 - (instancetype)initWithCurrentFlag:(int)currentFlag {
-    self = [super initWithStyle:UITableViewStyleInsetGrouped];
+    self = [super initWithStyle:GL_GROUPED_TABLE_STYLE];
     if (self) {
         _options = [ControllerButtonRemap targetButtons];
         _currentFlag = currentFlag;
@@ -80,7 +86,7 @@
 }
 
 - (instancetype)initWithControllerKey:(NSString *)key displayName:(NSString *)name {
-    self = [super initWithStyle:UITableViewStyleInsetGrouped];
+    self = [super initWithStyle:GL_GROUPED_TABLE_STYLE];
     if (self) {
         _key = [key copy];
         _name = [name copy];
@@ -230,7 +236,7 @@
     [cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     cancelButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightRegular];
     cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [cancelButton addTarget:self action:@selector(captureCancelTapped) forControlEvents:UIControlEventTouchUpInside];
+    [cancelButton addTarget:self action:@selector(captureCancelTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
     [_captureOverlay addSubview:cancelButton];
 
     [host addSubview:_captureOverlay];

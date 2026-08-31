@@ -29,6 +29,10 @@
 
 extern NSString* const kGLHostAddress;
 extern NSString* const kGLAppName;
+extern NSString* const kGLWidth;
+extern NSString* const kGLHeight;
+extern NSString* const kGLFramerate;
+extern NSString* const kGLBitrate;
 
 typedef NS_ENUM(NSInteger, GLConnectionState) {
     GLStateUnconfigured,
@@ -151,7 +155,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     _retryButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_retryButton setTitle:@"Retry" forState:UIControlStateNormal];
     _retryButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
-    [_retryButton addTarget:self action:@selector(retryTapped) forControlEvents:UIControlEventTouchUpInside];
+    [_retryButton addTarget:self action:@selector(retryTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
     _retryButton.translatesAutoresizingMaskIntoConstraints = NO;
     _retryButton.hidden = YES;
     [_overlayView addSubview:_retryButton];
@@ -159,7 +163,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     _settingsButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
     _settingsButton.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
-    [_settingsButton addTarget:self action:@selector(settingsTapped) forControlEvents:UIControlEventTouchUpInside];
+    [_settingsButton addTarget:self action:@selector(settingsTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
     _settingsButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_overlayView addSubview:_settingsButton];
 
@@ -179,10 +183,21 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
         [_retryButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:24],
         [_retryButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
+    ]];
 
+#if TARGET_OS_TV
+    // On tvOS the focus engine navigates by geometry, so stack Settings directly
+    // below Retry (centered) to make focus movable between the two buttons.
+    [NSLayoutConstraint activateConstraints:@[
+        [_settingsButton.topAnchor constraintEqualToAnchor:_retryButton.bottomAnchor constant:20],
+        [_settingsButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
+    ]];
+#else
+    [NSLayoutConstraint activateConstraints:@[
         [_settingsButton.bottomAnchor constraintEqualToAnchor:_overlayView.safeAreaLayoutGuide.bottomAnchor constant:-20],
         [_settingsButton.trailingAnchor constraintEqualToAnchor:_overlayView.safeAreaLayoutGuide.trailingAnchor constant:-20],
     ]];
+#endif
 }
 
 - (void)updateUI:(GLConnectionState)state status:(NSString*)status detail:(NSString*)detail {
@@ -345,15 +360,27 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     DataManager* dataMan = [[DataManager alloc] init];
     TemporarySettings* settings = [dataMan getSettings];
 
-    _streamConfig.frameRate = [settings.framerate intValue];
+    // User-facing values come from NSUserDefaults (durable on tvOS); the rest use
+    // the Core Data defaults.
+    NSUserDefaults* d = [NSUserDefaults standardUserDefaults];
+    NSInteger width  = [d integerForKey:kGLWidth]     ?: [settings.width intValue];
+    NSInteger height = [d integerForKey:kGLHeight]    ?: [settings.height intValue];
+    NSInteger fps    = [d integerForKey:kGLFramerate] ?: [settings.framerate intValue];
+    NSInteger bitrate = [d integerForKey:kGLBitrate]  ?: [settings.bitrate intValue];
+    if (width == 0)   width = 1920;
+    if (height == 0)  height = 1080;
+    if (fps == 0)     fps = 60;
+    if (bitrate == 0) bitrate = 10000;
+
+    _streamConfig.frameRate = (int)fps;
     if (@available(iOS 10.3, *)) {
         if (_streamConfig.frameRate > (int)[UIScreen mainScreen].maximumFramesPerSecond) {
             _streamConfig.frameRate = (int)[UIScreen mainScreen].maximumFramesPerSecond;
         }
     }
-    _streamConfig.height = [settings.height intValue];
-    _streamConfig.width = [settings.width intValue];
-    _streamConfig.bitRate = [settings.bitrate intValue];
+    _streamConfig.height = (int)height;
+    _streamConfig.width = (int)width;
+    _streamConfig.bitRate = (int)bitrate;
     _streamConfig.optimizeGameSettings = settings.optimizeGames;
     _streamConfig.playAudioOnPC = settings.playAudioOnPC;
     _streamConfig.useFramePacing = settings.useFramePacing;

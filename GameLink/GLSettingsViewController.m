@@ -14,6 +14,13 @@
 NSString* const kGLHostAddress = @"GLHostAddress";
 NSString* const kGLAppName = @"GLAppName";
 
+// User-facing stream settings are persisted directly in NSUserDefaults (which is
+// durable on both iOS and tvOS), rather than relying on the Core Data store.
+NSString* const kGLWidth = @"GLWidth";
+NSString* const kGLHeight = @"GLHeight";
+NSString* const kGLFramerate = @"GLFramerate";
+NSString* const kGLBitrate = @"GLBitrate";
+
 static NSString* bitrateFormat = @"Bitrate: %.1f Mbps";
 static const int bitrateTable[] = {
     500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000,
@@ -21,12 +28,23 @@ static const int bitrateTable[] = {
     50000, 60000, 70000, 80000, 100000,
 };
 
+#if TARGET_OS_TV
+// tvOS has no UISlider, so offer a set of preset bitrates instead.
+static const int bitratePresets[] = {
+    5000, 10000, 15000, 20000, 30000, 40000, 50000, 80000, 100000,
+};
+#endif
+
 @implementation GLSettingsViewController {
     UITextField* _hostField;
     UITextField* _appNameField;
     UISegmentedControl* _resolutionSelector;
     UISegmentedControl* _framerateSelector;
+#if TARGET_OS_TV
+    UISegmentedControl* _bitratePresets;
+#else
     UISlider* _bitrateSlider;
+#endif
     UILabel* _bitrateLabel;
     NSInteger _bitrate;
     UIScrollView* _scrollView;
@@ -35,7 +53,8 @@ static const int bitrateTable[] = {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1.0];
+//    self.view.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1.0];
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
 
     self.navigationItem.title = @"Connection Settings";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
@@ -92,44 +111,54 @@ static const int bitrateTable[] = {
     CGFloat safeWidth = self.view.bounds.size.width
         - self.view.safeAreaInsets.left
         - self.view.safeAreaInsets.right;
-    CGFloat maxContentWidth = MIN(safeWidth, 600);
+    CGFloat maxContentWidth = safeWidth; //MIN(safeWidth, 600);
     CGFloat margin = 20;
     CGFloat width = maxContentWidth - margin * 2;
     CGFloat y = 30;
+#   if TARGET_OS_TV
+    CGFloat fieldHeight = 80;
+    CGFloat labelHeight = 44;
+    CGFloat spacing = 24;
+#   else
     CGFloat fieldHeight = 40;
     CGFloat labelHeight = 22;
     CGFloat spacing = 12;
+#   endif
 
     // --- Host ---
     UILabel* hostLabel = [self makeSectionLabel:@"HOST ADDRESS"];
     hostLabel.frame = CGRectMake(margin, y, width, labelHeight);
     [_scrollView addSubview:hostLabel];
-    y += labelHeight + 4;
+    y = CGRectGetMaxY(hostLabel.frame) + 4;
 
     _hostField = [self makeTextField:@"e.g. 192.168.1.100"];
     _hostField.frame = CGRectMake(margin, y, width, fieldHeight);
     _hostField.keyboardType = UIKeyboardTypeURL;
     _hostField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _hostField.autocorrectionType = UITextAutocorrectionTypeNo;
+    _hostField.tag = 1;
     [_scrollView addSubview:_hostField];
-    y += fieldHeight + spacing;
+    y = CGRectGetMaxY(_hostField.frame) + spacing;
 
     // --- App Name ---
     UILabel* appLabel = [self makeSectionLabel:@"APP / GAME NAME"];
     appLabel.frame = CGRectMake(margin, y, width, labelHeight);
     [_scrollView addSubview:appLabel];
-    y += labelHeight + 4;
+    y = CGRectGetMaxY(appLabel.frame) + 4;
 
     _appNameField = [self makeTextField:@"e.g. Desktop or Steam"];
     _appNameField.frame = CGRectMake(margin, y, width, fieldHeight);
+    _appNameField.tag = 2;
     [_scrollView addSubview:_appNameField];
-    y += fieldHeight + spacing * 2;
-
+    y = CGRectGetMaxY(_appNameField.frame) + spacing;
+    
+    y += spacing;
+    
     // --- Resolution ---
     UILabel* resLabel = [self makeSectionLabel:@"RESOLUTION"];
     resLabel.frame = CGRectMake(margin, y, width, labelHeight);
     [_scrollView addSubview:resLabel];
-    y += labelHeight + 6;
+    y = CGRectGetMaxY(resLabel.frame) + 4;
 
     NSMutableArray* resSegments = [NSMutableArray arrayWithObjects:@"720p", @"1080p", nil];
     if (VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC)) {
@@ -139,13 +168,13 @@ static const int bitrateTable[] = {
     _resolutionSelector.frame = CGRectMake(margin, y, width, 34);
     _resolutionSelector.tintColor = [UIColor systemBlueColor];
     [_scrollView addSubview:_resolutionSelector];
-    y += 34 + spacing;
+    y = CGRectGetMaxY(_resolutionSelector.frame) + spacing;
 
     // --- Frame Rate ---
     UILabel* fpsLabel = [self makeSectionLabel:@"FRAME RATE"];
     fpsLabel.frame = CGRectMake(margin, y, width, labelHeight);
     [_scrollView addSubview:fpsLabel];
-    y += labelHeight + 6;
+    y = CGRectGetMaxY(fpsLabel.frame) + 4;
 
     NSMutableArray* fpsSegments = [NSMutableArray arrayWithObjects:@"30 FPS", @"60 FPS", nil];
     if (@available(iOS 10.3, *)) {
@@ -158,40 +187,55 @@ static const int bitrateTable[] = {
     _framerateSelector.tintColor = [UIColor systemBlueColor];
     [_framerateSelector addTarget:self action:@selector(updateBitrate) forControlEvents:UIControlEventValueChanged];
     [_scrollView addSubview:_framerateSelector];
-    y += 34 + spacing;
+    y = CGRectGetMaxY(_framerateSelector.frame) + spacing;
 
     // --- Bitrate ---
     _bitrateLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, y, width, labelHeight)];
-    _bitrateLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
+//    _bitrateLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
     _bitrateLabel.font = [UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
     [_scrollView addSubview:_bitrateLabel];
-    y += labelHeight + 4;
+    y = CGRectGetMaxY(_bitrateLabel.frame) + 4;
 
+#if TARGET_OS_TV
+    NSMutableArray* presetTitles = [NSMutableArray array];
+    for (int i = 0; i < (int)(sizeof(bitratePresets) / sizeof(*bitratePresets)); i++) {
+        [presetTitles addObject:[NSString stringWithFormat:@"%d", bitratePresets[i] / 1000]];
+    }
+    _bitratePresets = [[UISegmentedControl alloc] initWithItems:presetTitles];
+    _bitratePresets.frame = CGRectMake(margin, y, width, 44);
+    [_bitratePresets addTarget:self action:@selector(bitratePresetChanged) forControlEvents:UIControlEventValueChanged];
+    [_scrollView addSubview:_bitratePresets];
+    y = CGRectGetMaxY(_bitratePresets.frame) + spacing;
+#else
     _bitrateSlider = [[UISlider alloc] initWithFrame:CGRectMake(margin, y, width, 34)];
     _bitrateSlider.minimumValue = 0;
     _bitrateSlider.maximumValue = (sizeof(bitrateTable) / sizeof(*bitrateTable)) - 1;
     [_bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
     [_scrollView addSubview:_bitrateSlider];
-    y += 34 + spacing * 3;
+    y = CGRectGetMaxY(_bitrateSlider.frame) + spacing;
+#endif
 
+    y += spacing;
+    
     // --- Controller Mapping ---
     UILabel* controllerLabel = [self makeSectionLabel:@"CONTROLLER"];
     controllerLabel.frame = CGRectMake(margin, y, width, labelHeight);
     [_scrollView addSubview:controllerLabel];
-    y += labelHeight + 4;
+    y = CGRectGetMaxY(controllerLabel.frame) + 4;
 
     UIButton* mappingButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [mappingButton setTitle:@"Button Mapping" forState:UIControlStateNormal];
     mappingButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightRegular];
     mappingButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    mappingButton.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
-    mappingButton.layer.cornerRadius = 8;
-    mappingButton.contentEdgeInsets = UIEdgeInsetsMake(0, 12, 0, 12);
+//    mappingButton.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
+//    mappingButton.layer.cornerRadius = 8;
+//    mappingButton.contentEdgeInsets = UIEdgeInsetsMake(0, 12, 0, 12);
     mappingButton.frame = CGRectMake(margin, y, width, fieldHeight);
-    [mappingButton addTarget:self action:@selector(openControllerMapping) forControlEvents:UIControlEventTouchUpInside];
+    [mappingButton addTarget:self action:@selector(openControllerMapping) forControlEvents:UIControlEventPrimaryActionTriggered];
     [_scrollView addSubview:mappingButton];
-    y += fieldHeight + spacing * 3;
-
+    y = CGRectGetMaxY(mappingButton.frame) + spacing;
+    
+    y += spacing;
     _scrollView.contentSize = CGSizeMake(maxContentWidth, y);
 }
 
@@ -203,7 +247,7 @@ static const int bitrateTable[] = {
 - (UILabel*)makeSectionLabel:(NSString*)text {
     UILabel* label = [[UILabel alloc] init];
     label.text = text;
-    label.textColor = [UIColor colorWithWhite:0.5 alpha:1.0];
+//    label.textColor = [UIColor colorWithWhite:0.5 alpha:1.0];
     label.font = [UIFont systemFontOfSize:11 weight:UIFontWeightSemibold];
     return label;
 }
@@ -211,15 +255,20 @@ static const int bitrateTable[] = {
 - (UITextField*)makeTextField:(NSString*)placeholder {
     UITextField* field = [[UITextField alloc] init];
     field.placeholder = placeholder;
-    field.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
-    field.textColor = [UIColor whiteColor];
+//    field.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
+//    field.textColor = [UIColor whiteColor];
+#if !TARGET_OS_TV
+//    field.textColor = [UIColor labelColor];
+//    field.backgroundColor = [UIColor systemBackgroundColor];
+#endif
+    field.borderStyle = UITextBorderStyleRoundedRect;
     field.attributedPlaceholder = [[NSAttributedString alloc]
         initWithString:placeholder
             attributes:@{NSForegroundColorAttributeName: [UIColor colorWithWhite:0.4 alpha:1.0]}];
     field.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 12, 0)];
     field.leftViewMode = UITextFieldViewModeAlways;
-    field.layer.cornerRadius = 8;
-    field.returnKeyType = UIReturnKeyDone;
+//    field.layer.cornerRadius = 8;
+//    field.returnKeyType = UIReturnKeyDone;
     field.delegate = self;
     return field;
 }
@@ -228,8 +277,15 @@ static const int bitrateTable[] = {
     _hostField.text = hostAddress;
     _appNameField.text = appName;
 
+    // Prefer values persisted in NSUserDefaults; fall back to Core Data, then defaults.
+    NSUserDefaults* d = [NSUserDefaults standardUserDefaults];
+    NSInteger height = [d integerForKey:kGLHeight] ?: [settings.height integerValue];
+    NSInteger fps    = [d integerForKey:kGLFramerate] ?: [settings.framerate integerValue];
+    NSInteger br     = [d integerForKey:kGLBitrate] ?: [settings.bitrate integerValue];
+    if (height == 0) height = 1080;
+    if (fps == 0)    fps = 60;
+
     // Resolution
-    NSInteger height = [settings.height integerValue];
     if (height >= 2160 && _resolutionSelector.numberOfSegments > 2) {
         [_resolutionSelector setSelectedSegmentIndex:2];
     } else if (height >= 1080) {
@@ -239,7 +295,6 @@ static const int bitrateTable[] = {
     }
 
     // Frame rate
-    NSInteger fps = [settings.framerate integerValue];
     if (fps >= 120 && _framerateSelector.numberOfSegments > 2) {
         [_framerateSelector setSelectedSegmentIndex:2];
     } else if (fps >= 60) {
@@ -249,10 +304,42 @@ static const int bitrateTable[] = {
     }
 
     // Bitrate
-    _bitrate = [settings.bitrate integerValue];
-    [_bitrateSlider setValue:[self sliderIndexForBitrate:_bitrate] animated:NO];
+    _bitrate = br;
+    if (_bitrate == 0) {
+        [self updateBitrate]; // derive a sensible default from resolution/fps
+    } else {
+        [self syncBitrateControlAnimated:NO];
+        [self updateBitrateLabel];
+    }
+}
+
+// Reflect the current _bitrate value in whichever bitrate control this platform uses.
+- (void)syncBitrateControlAnimated:(BOOL)animated {
+#if TARGET_OS_TV
+    int count = (int)(sizeof(bitratePresets) / sizeof(*bitratePresets));
+    int bestIndex = 0;
+    for (int i = 0; i < count; i++) {
+        if (_bitrate >= bitratePresets[i]) {
+            bestIndex = i;
+        }
+    }
+    _bitratePresets.selectedSegmentIndex = bestIndex;
+#else
+    [_bitrateSlider setValue:[self sliderIndexForBitrate:_bitrate] animated:animated];
+#endif
+}
+
+#if TARGET_OS_TV
+- (void)bitratePresetChanged {
+    NSInteger idx = _bitratePresets.selectedSegmentIndex;
+    int count = (int)(sizeof(bitratePresets) / sizeof(*bitratePresets));
+    if (idx < 0 || idx >= count) {
+        return;
+    }
+    _bitrate = bitratePresets[idx];
     [self updateBitrateLabel];
 }
+#endif
 
 - (int)sliderIndexForBitrate:(NSInteger)bitrate {
     int count = (int)(sizeof(bitrateTable) / sizeof(*bitrateTable));
@@ -304,10 +391,11 @@ static const int bitrateTable[] = {
 
     float frameRateFactor = (fps <= 60 ? fps : (sqrtf(fps / 60.f) * 60.f)) / 30.f;
     _bitrate = MIN((NSInteger)roundf(resolutionFactor * frameRateFactor) * 1000, 100000);
-    [_bitrateSlider setValue:[self sliderIndexForBitrate:_bitrate] animated:YES];
+    [self syncBitrateControlAnimated:YES];
     [self updateBitrateLabel];
 }
 
+#if !TARGET_OS_TV
 - (void)bitrateSliderMoved {
     int idx = (int)_bitrateSlider.value;
     int count = (int)(sizeof(bitrateTable) / sizeof(*bitrateTable));
@@ -315,6 +403,7 @@ static const int bitrateTable[] = {
     _bitrate = bitrateTable[idx];
     [self updateBitrateLabel];
 }
+#endif
 
 - (void)updateBitrateLabel {
     _bitrateLabel.text = [NSString stringWithFormat:bitrateFormat, _bitrate / 1000.0];
@@ -337,6 +426,10 @@ static const int bitrateTable[] = {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:host forKey:kGLHostAddress];
     [defaults setObject:appName forKey:kGLAppName];
+    [defaults setInteger:[self chosenWidth] forKey:kGLWidth];
+    [defaults setInteger:[self chosenHeight] forKey:kGLHeight];
+    [defaults setInteger:[self chosenFPS] forKey:kGLFramerate];
+    [defaults setInteger:_bitrate forKey:kGLBitrate];
     [defaults synchronize];
 
     DataManager* dataMan = [[DataManager alloc] init];

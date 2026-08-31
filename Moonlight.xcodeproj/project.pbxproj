@@ -7,44 +7,85 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0457B8F9E919C07472474B52 /* PairManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461419F646E200339C8A /* PairManager.m */; };
 		07D719A9040609F4CB0AB1AD /* TemporarySettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */; };
 		0A0D457106EF1582B8D1C76E /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A042AF60F5300C5A11C /* libavutil.a */; };
 		0A3E95F45FF04C228FBFD8C4 /* AppAssetRetriever.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD311A7D867C00872C98 /* AppAssetRetriever.m */; };
+		0B38955E3306655E96AC64C2 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 58783CBDCD896B0CA699E0EB /* OpenSSL */; };
 		0BD7A2AA81DC4461A158BC68 /* AppAssetResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD3C1A7E111600872C98 /* AppAssetResponse.m */; };
+		0BE3E9611440152A46F2098A /* GLLaunchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EB23EB96954CF62B06F658 /* GLLaunchViewController.m */; };
+		0DD6D3C4EBADA34022FF27AE /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462219F646E200339C8A /* Utils.m */; };
+		0E64171240C0511CB917827D /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9865DC3B2132922E0005B9B9 /* GameController.framework */; };
 		0EC1F2CFAFA484D34C88718D /* VideoDecoderRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461D19F646E200339C8A /* VideoDecoderRenderer.m */; };
+		10C31CC0DFEEBC38A85B778A /* IdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB53E1421BE5DC4400CD6ECE /* IdManager.m */; };
 		12624EE16C4D3C7C6863E732 /* PairManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461419F646E200339C8A /* PairManager.m */; };
+		12BE001311CC0A713341C196 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD1C8E11A8AD71400C6703C /* Logger.m */; };
+		16DF9B9DD5338F8F93B7BB62 /* KeyboardInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = 988FCD40293B091B003050E2 /* KeyboardInputField.m */; };
 		194E1D0FA709E7826FE0CCE7 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD349611A0089F6002D2A60 /* DataManager.m */; };
 		19AB19BA396BCE36D8BDAC01 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF319B2C406004C83CF /* CoreGraphics.framework */; };
 		208670A0D556E65CDF0A78A8 /* Limelight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB290D0519B2C406004C83CF /* Limelight.xcdatamodeld */; };
 		2288A82BC39DE8DE72DC27F2 /* KeyboardInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = 988FCD40293B091B003050E2 /* KeyboardInputField.m */; };
+		2527B742625C2ACF95733B42 /* libmoonlight-common-tv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB1A68152132509400507771 /* libmoonlight-common-tv.a */; };
+		26B0D5E66D444D5E0C180F70 /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461719F646E200339C8A /* Connection.m */; };
 		28955FE6EAF98E09C2B195B5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF719B2C406004C83CF /* CoreData.framework */; };
 		3024CA5E1B7DB48C66A27FF2 /* IdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB53E1421BE5DC4400CD6ECE /* IdManager.m */; };
+		31F51566C47F8F9B3695D7B0 /* MDNSManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461219F646E200339C8A /* MDNSManager.m */; };
 		32F2A13E362BCF19AA4BBFD5 /* LoadingFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4A23B71A9D3637004D2EF2 /* LoadingFrameViewController.m */; };
+		33CDE372F3F2FC23B1E9F2D7 /* AppListResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD3F1A7E127D00872C98 /* AppListResponse.m */; };
 		3507B5E1F0995F4D4D8C89F1 /* X1Kit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9896219623D15C7000211983 /* X1Kit.swift */; };
 		36398CABB7DF1C485EBF6ADD /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A032AF60F5300C5A11C /* libavcodec.a */; };
+		370C4CEF47594DB39387E31E /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A0A2AF60F9000C5A11C /* libavcodec.a */; };
+		3A02683045C2CE78813D122B /* GLControllerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */; };
 		4135326F91D4E811C2857A69 /* TemporaryHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */; };
+		42939E84A98FFDD7EDAC66E0 /* Limelight.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FB290D0519B2C406004C83CF /* Limelight.xcdatamodeld */; };
 		4309E8E6EEE53A5D0FB2F2E9 /* AbsoluteTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9819CC21254F180F008A7C8E /* AbsoluteTouchHandler.m */; };
 		43455A28308D63A57441727D /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
 		442B640B78328044AA94749F /* GameLinkLaunch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1D9EA65D097F0FEDEE5E9F1 /* GameLinkLaunch.storyboard */; };
+		45CF37159C031525EE3DF132 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BEA2791278300E43572 /* libSDL2.a */; };
+		4834E923457FAB43977E3FC9 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A092AF60F9000C5A11C /* libavutil.a */; };
+		488F0E2F67CED5993D6256C1 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD349611A0089F6002D2A60 /* DataManager.m */; };
+		4ABC6E7F98CB3582271E6169 /* ServerInfoResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD391A7E05CE00872C98 /* ServerInfoResponse.m */; };
+		4C4B60621FD6B68A730C926D /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A0B2AF60F9000C5A11C /* libavformat.a */; };
 		50B58FB31DE47E6531A91FFF /* RelativeTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9819CC13254F107A008A7C8E /* RelativeTouchHandler.m */; };
 		50B6D35C942B62C89E64D62B /* GameLink.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62B79DC880E95931F2174F0A /* GameLink.storyboard */; };
+		50E2902B941A70EC5C4DF103 /* ConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1F5A06206436B20037755F /* ConnectionHelper.m */; };
+		50F2FBD7D83C85CC28857AC9 /* GLControllerRemapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */; };
+		52F2432FEF1E1717C716B1F9 /* RelativeTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9819CC13254F107A008A7C8E /* RelativeTouchHandler.m */; };
 		54B9D51489F396AE206A7B05 /* WakeOnLanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678FE1A565DAC00377732 /* WakeOnLanManager.m */; };
 		5ACB1B10F4A35641F29FAD1F /* libmoonlight-common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AB2E841CAD46840089BB98 /* libmoonlight-common.a */; };
+		5B6C2D0F8DA72529FB9AD642 /* GameLinkTV.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC6FB139C9AC2AEBFC68AD8E /* GameLinkTV.storyboard */; };
 		5C634EDCD3EEA483E9DB0468 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD1C8E11A8AD71400C6703C /* Logger.m */; };
+		5C93E4E50F0B574259F43952 /* GLSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */; };
 		5F42FECE2D99CB76A4E27F47 /* mkcert.c in Sources */ = {isa = PBXBuildFile; fileRef = FB89460719F646E200339C8A /* mkcert.c */; };
+		62C5EDEB4791A0B3F32C1CD5 /* GameLinkTVLaunch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97F9E5BCF997EA08AD00387F /* GameLinkTVLaunch.storyboard */; };
 		640EBBCF033C0C0038627EF3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0CF69F04A0DD5F65FF251A4 /* main.m */; };
+		6575CE292FCA587D9A950AF8 /* CryptoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460619F646E200339C8A /* CryptoManager.m */; };
 		66F371AADBC73DC0771FCE82 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BEC2791281100E43572 /* CoreMotion.framework */; };
 		693B3A9B218638CD00982F7B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 693B3A9A218638CD00982F7B /* Settings.bundle */; };
 		71069F3A6316D16F0BE0BD0F /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BE82791275D00E43572 /* libSDL2.a */; };
+		71FA8E79A27305342A137EF2 /* Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = 9897B6A0221260EF00966419 /* Controller.m */; };
 		73241FAB47FF419A436A5A89 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
 		759ABE32B5A4F52901FA7E61 /* MDNSManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461219F646E200339C8A /* MDNSManager.m */; };
+		764EDA8F47C99635570FE268 /* ControllerSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460B19F646E200339C8A /* ControllerSupport.m */; };
+		783C173A8090CCF9B7BA33ED /* X1Kit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9896219623D15C7000211983 /* X1Kit.swift */; };
 		788784B734A64C1AF13867C2 /* GLControllerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */; };
 		7C43BA7FD361D17840BEE954 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
+		7D98287E619722097D0A8590 /* TemporarySettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */; };
+		81147D2DEAB1D776D801B800 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0CF69F04A0DD5F65FF251A4 /* main.m */; };
+		821AE2AFA6D4ABFF866A52B2 /* VideoDecoderRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461D19F646E200339C8A /* VideoDecoderRenderer.m */; };
+		85EC0C101DF12E5AE3F0112E /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD361A7E02DB00872C98 /* HttpRequest.m */; };
 		865B695B3044A9C200DB2D8C /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = 865B695A3044A9BD00DB2D8C /* TODO.md */; };
 		865B695F304547FB00DB2D8C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 865B695E304547FB00DB2D8C /* Images.xcassets */; };
+		865B69643045E89500DB2D8C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 865B695E304547FB00DB2D8C /* Images.xcassets */; };
+		865B69663045EDE600DB2D8C /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 693B3A9A218638CD00982F7B /* Settings.bundle */; };
 		86B760923044753500438B9B /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3495219FF36FB002D2A60 /* SWRevealViewController.m */; };
 		87F5C2BC2B0F792E53457B1B /* DiscoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678F91A55FFAD00377732 /* DiscoveryManager.m */; };
 		8A31FDBD240DE789EDEA22CD /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461719F646E200339C8A /* Connection.m */; };
+		8D265497BA06D452C810D6B8 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FB1A67E921324DF300507771 /* libxml2.tbd */; };
+		8E67E2C61F67F98559FA74C9 /* DiscoveryWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6549551A57907E001C8F39 /* DiscoveryWorker.m */; };
+		8F448F72440C3CB094D02BEA /* DiscoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678F91A55FFAD00377732 /* DiscoveryManager.m */; };
+		8FFA1FE951757A3E362F1425 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD47A5281E0DBC1458805ACB /* Assets.xcassets */; };
+		901A4DB58174DF319E447013 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98B9CE6C27B2144B00B473C4 /* AVKit.framework */; };
 		93090CC577D0E65919272D72 /* ControllerSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460B19F646E200339C8A /* ControllerSupport.m */; };
 		98181BE92791277400E43572 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BE82791275D00E43572 /* libSDL2.a */; };
 		98181BEB2791278F00E43572 /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BEA2791278300E43572 /* libSDL2.a */; };
@@ -80,37 +121,60 @@
 		98D5856D1C0EA79600F6CC00 /* TemporaryHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */; };
 		98D585701C0ED0E800F6CC00 /* TemporarySettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */; };
 		9BE63FEB8B6C6BCA711CCB54 /* AppAssetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3494219FC9C04002D2A60 /* AppAssetManager.m */; };
+		9C1E7C2FDF203AF93477B750 /* KeyboardSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1A674C2131E65900507771 /* KeyboardSupport.m */; };
+		9E87677FA2EFECF171697547 /* HapticContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9827E7A22514366900F25707 /* HapticContext.m */; };
+		9F571A63795E452CD38FA323 /* StreamManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461B19F646E200339C8A /* StreamManager.m */; };
 		A09228103B51FC029FDFD901 /* StreamManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461B19F646E200339C8A /* StreamManager.m */; };
 		A2B8A8872E0222BE7F31F955 /* ConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1F5A06206436B20037755F /* ConnectionHelper.m */; };
 		A30A02CD817E88E44A722ADF /* DiscoveryWorker.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6549551A57907E001C8F39 /* DiscoveryWorker.m */; };
+		A3A1940F06D70B9CB968544D /* HttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461019F646E200339C8A /* HttpManager.m */; };
 		A403344A2A3D14C7FB599C69 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB8946EA19F6AFB800339C8A /* libopus.a */; };
 		A58C268B211F4F34B935B8D7 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9890CF6A203B7EE1006C4B06 /* libxml2.tbd */; };
+		A5D382BBF55CDA5F439328DC /* TemporaryApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9832D1351BBCD5C50036EF48 /* TemporaryApp.m */; };
+		A9855ACB225C098C47DBA9F8 /* OnScreenControls.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678EC1A50C40900377732 /* OnScreenControls.m */; };
 		AF0C1EAD16367EE0CDEA33E3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB290CFC19B2C406004C83CF /* InfoPlist.strings */; };
+		AFA3E7E7F4E383C5FC693977 /* TemporaryHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */; };
+		B39A03D608E0AD7AB85CBE22 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CF4D700B65360B6A5DC0BE2 /* Foundation.framework */; };
+		B3B22F21AD42C73F19473895 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB290D0819B2C406004C83CF /* Images.xcassets */; };
 		B43808C55FD19106E911D591 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB290D0819B2C406004C83CF /* Images.xcassets */; };
 		B715728F52FE003345C323BD /* StreamConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461919F646E200339C8A /* StreamConfiguration.m */; };
+		B75A49554D2BFFB6E2BF85BF /* AppAssetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3494219FC9C04002D2A60 /* AppAssetManager.m */; };
+		B7790568D99C6AA1096537D5 /* GLControllerNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */; };
 		B792CA11F4B411EC7ADAE7CB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BC0A3AF7CE81DE924CABF92 /* Foundation.framework */; };
 		B9507BBD3CE4B2FE23F16E51 /* HttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461019F646E200339C8A /* HttpManager.m */; };
 		BD3147E418049108BA51FA6D /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462219F646E200339C8A /* Utils.m */; };
 		BE1E54A69868C14269C1181D /* KeyboardSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = FB1A674C2131E65900507771 /* KeyboardSupport.m */; };
 		BE246F71BC81ED7F687EFB4B /* Controller.m in Sources */ = {isa = PBXBuildFile; fileRef = 9897B6A0221260EF00966419 /* Controller.m */; };
 		C343DC81F3416C10695B3B0A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF519B2C406004C83CF /* UIKit.framework */; };
+		C59B7359A32AD815C06E4057 /* StreamFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462719F646E200339C8A /* StreamFrameViewController.m */; };
 		C5CD41DB809B6921FE2C9A8D /* AppListResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD3F1A7E127D00872C98 /* AppListResponse.m */; };
 		C6BC7E1BB618E0430C942BDB /* GLSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */; };
+		C9238CF9323536B12FB8E491 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB1A67E421324A1F00507771 /* CoreData.framework */; };
+		CA132C61C06F03DC3A576D33 /* AppAssetRetriever.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD311A7D867C00872C98 /* AppAssetRetriever.m */; };
+		CB5C6417DC73A6CA5E2E6826 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
 		D55228C48D4393EF895559AB /* CryptoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460619F646E200339C8A /* CryptoManager.m */; };
 		D6046A4BD36D107D7F8BC37F /* TemporaryApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9832D1351BBCD5C50036EF48 /* TemporaryApp.m */; };
+		D673BDC290B04BF4BC24B6AB /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD271A7C84ED00872C98 /* HttpResponse.m */; };
 		DC1F5A07206436B20037755F /* ConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DC1F5A06206436B20037755F /* ConnectionHelper.m */; };
 		DCEA3FB0AD7F02F58545C2D1 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 7A161A4C3BD8BD5A9BD12E60 /* OpenSSL */; };
 		DEA9DD292F81DCCC37BEC0EB /* HapticContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9827E7A22514366900F25707 /* HapticContext.m */; };
 		E0E3466394C7A4A5B550EE4D /* GLLaunchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EB23EB96954CF62B06F658 /* GLLaunchViewController.m */; };
+		E182504DF8ADA51F76A005CB /* StreamConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461919F646E200339C8A /* StreamConfiguration.m */; };
 		E365D3ED4F11556C8A819859 /* GLControllerNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */; };
 		E3D60DA47CAB6973BCF79F2B /* StreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460D19F646E200339C8A /* StreamView.m */; };
 		E4FDD1DC766BC3FCB00579C7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4679001A57048000377732 /* CoreFoundation.framework */; };
+		E527B38697F2A4C07EA9E703 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */; };
 		E60CD5CC9983584E6FACEC86 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD361A7E02DB00872C98 /* HttpRequest.m */; };
 		E7971141B17D08652E867389 /* StreamFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462719F646E200339C8A /* StreamFrameViewController.m */; };
+		EABA2574DA90804F5B47A384 /* StreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460D19F646E200339C8A /* StreamView.m */; };
 		EAE5369758D13BCBA5C0A6EE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */; };
 		EB2B733FAD551B959491ACB3 /* GLControllerRemapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */; };
 		F23ED00C11C54E2AD64524D2 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A052AF60F5300C5A11C /* libavformat.a */; };
+		F24A4BB854D6FB997C9304A7 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB8946EA19F6AFB800339C8A /* libopus.a */; };
 		F29FC41AC76E44DF40748DF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF119B2C406004C83CF /* Foundation.framework */; };
+		F3C05E63F433F09F93AB3A4F /* WakeOnLanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678FE1A565DAC00377732 /* WakeOnLanManager.m */; };
+		F495437EB7BFCEE6DF177C74 /* AppAssetResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD3C1A7E111600872C98 /* AppAssetResponse.m */; };
+		F6F887110DC702DB7223A5DA /* mkcert.c in Sources */ = {isa = PBXBuildFile; fileRef = FB89460719F646E200339C8A /* mkcert.c */; };
 		F74BEF9C2C1A705600224667 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F74BEF9B2C1A705600224667 /* OpenSSL */; };
 		F74BEFA42C1A80E400224667 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F74BEFA32C1A80E400224667 /* OpenSSL */; };
 		F89B31319C97CC53455ABBD4 /* OnScreenControls.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678EC1A50C40900377732 /* OnScreenControls.m */; };
@@ -211,6 +275,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		86DE777DA25951DABA165377 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98AB2E7F1CAD46830089BB98 /* moonlight-common.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FB1A67EE21324EE300507771;
+			remoteInfo = "moonlight-common-tv";
+		};
 		98AB2E831CAD46840089BB98 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 98AB2E7F1CAD46830089BB98 /* moonlight-common.xcodeproj */;
@@ -260,6 +331,7 @@
 		662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerRemapViewController.m; sourceTree = "<group>"; };
 		693B3A9A218638CD00982F7B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		72DEBEB6375BB63F4B5FE47D /* GLSettingsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLSettingsViewController.h; sourceTree = "<group>"; };
+		7CF4D700B65360B6A5DC0BE2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		81DB5985C53BFA9FA9692B12 /* AppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		865B695A3044A9BD00DB2D8C /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		865B695E304547FB00DB2D8C /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -267,6 +339,7 @@
 		8BC0A3AF7CE81DE924CABF92 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerNavigator.m; sourceTree = "<group>"; };
 		96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonRemap.m; sourceTree = "<group>"; };
+		97F9E5BCF997EA08AD00387F /* GameLinkTVLaunch.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = GameLinkTVLaunch.storyboard; sourceTree = "<group>"; };
 		9803CCAB254F9EAF00EE185E /* ConnectionCallbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectionCallbacks.h; sourceTree = "<group>"; };
 		98132E8C20BC9A62007A053F /* Moonlight v1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Moonlight v1.1.xcdatamodel"; sourceTree = "<group>"; };
 		98181BE82791275D00E43572 /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = libs/SDL2/lib/iOS/libSDL2.a; sourceTree = "<group>"; };
@@ -310,9 +383,12 @@
 		A0CF69F04A0DD5F65FF251A4 /* main.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AA60C635E202E1FE4203C187 /* GLControllerNavigator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLControllerNavigator.h; sourceTree = "<group>"; };
 		B1AC790FA38824B393F82D91 /* GLLaunchViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLLaunchViewController.h; sourceTree = "<group>"; };
+		CC6FB139C9AC2AEBFC68AD8E /* GameLinkTV.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = GameLinkTV.storyboard; sourceTree = "<group>"; };
 		D4746EEA1CBC740C006FB401 /* Moonlight-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Moonlight-Bridging-Header.h"; path = "Input/Moonlight-Bridging-Header.h"; sourceTree = "<group>"; };
 		DC1F5A05206436B10037755F /* ConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionHelper.h; sourceTree = "<group>"; };
 		DC1F5A06206436B20037755F /* ConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionHelper.m; sourceTree = "<group>"; };
+		DDD58384F2903271A79C24E1 /* GameLinkTV-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GameLinkTV-Info.plist"; sourceTree = "<group>"; };
+		E513C81A9037F2B837A9ECCA /* GameLink TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GameLink TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1D9EA65D097F0FEDEE5E9F1 /* GameLinkLaunch.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = GameLinkLaunch.storyboard; sourceTree = "<group>"; };
 		F4320501B44EAE893A3B2E9D /* GameLink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameLink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerListViewController.m; sourceTree = "<group>"; };
@@ -421,9 +497,29 @@
 		FBDE86DF19F7A837001C18A8 /* UIComputerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIComputerView.m; sourceTree = "<group>"; };
 		FBDE86E419F82297001C18A8 /* UIAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAppView.h; sourceTree = "<group>"; };
 		FBDE86E519F82297001C18A8 /* UIAppView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAppView.m; sourceTree = "<group>"; };
+		FD47A5281E0DBC1458805ACB /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		040EFBFA5B931E49BFF95364 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B39A03D608E0AD7AB85CBE22 /* Foundation.framework in Frameworks */,
+				2527B742625C2ACF95733B42 /* libmoonlight-common-tv.a in Frameworks */,
+				0E64171240C0511CB917827D /* GameController.framework in Frameworks */,
+				4C4B60621FD6B68A730C926D /* libavformat.a in Frameworks */,
+				4834E923457FAB43977E3FC9 /* libavutil.a in Frameworks */,
+				8D265497BA06D452C810D6B8 /* libxml2.tbd in Frameworks */,
+				F24A4BB854D6FB997C9304A7 /* libopus.a in Frameworks */,
+				45CF37159C031525EE3DF132 /* libSDL2.a in Frameworks */,
+				C9238CF9323536B12FB8E491 /* CoreData.framework in Frameworks */,
+				901A4DB58174DF319E447013 /* AVKit.framework in Frameworks */,
+				370C4CEF47594DB39387E31E /* libavcodec.a in Frameworks */,
+				0B38955E3306655E96AC64C2 /* OpenSSL in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3530D959F1B0224106D69A88 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -488,6 +584,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		099D8D27297027D258C3294D /* GameLink TV */ = {
+			isa = PBXGroup;
+			children = (
+				FD47A5281E0DBC1458805ACB /* Assets.xcassets */,
+			);
+			path = "GameLink TV";
+			sourceTree = "<group>";
+		};
 		3DDFFD366782D72E36D33F4B /* GameLink */ = {
 			isa = PBXGroup;
 			children = (
@@ -509,6 +613,9 @@
 				4BFA2DD33A936FC5BC1DA033 /* GLControllerRemapViewController.h */,
 				90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */,
 				AA60C635E202E1FE4203C187 /* GLControllerNavigator.h */,
+				CC6FB139C9AC2AEBFC68AD8E /* GameLinkTV.storyboard */,
+				DDD58384F2903271A79C24E1 /* GameLinkTV-Info.plist */,
+				97F9E5BCF997EA08AD00387F /* GameLinkTVLaunch.storyboard */,
 			);
 			path = GameLink;
 			sourceTree = "<group>";
@@ -538,6 +645,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		CF90722223D89ED4C57A6ED4 /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				7CF4D700B65360B6A5DC0BE2 /* Foundation.framework */,
+			);
+			name = tvOS;
+			sourceTree = "<group>";
+		};
 		FB1A67542132419700507771 /* Moonlight TV */ = {
 			isa = PBXGroup;
 			children = (
@@ -560,6 +675,7 @@
 				FB290CF019B2C406004C83CF /* Frameworks */,
 				FB290CEF19B2C406004C83CF /* Products */,
 				3DDFFD366782D72E36D33F4B /* GameLink */,
+				099D8D27297027D258C3294D /* GameLink TV */,
 			);
 			sourceTree = "<group>";
 		};
@@ -569,6 +685,7 @@
 				FB290CEE19B2C406004C83CF /* Moonlight.app */,
 				FB1A67532132419700507771 /* Moonlight TV.app */,
 				F4320501B44EAE893A3B2E9D /* GameLink.app */,
+				E513C81A9037F2B837A9ECCA /* GameLink TV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -597,6 +714,7 @@
 				FB290CF519B2C406004C83CF /* UIKit.framework */,
 				FB290CF719B2C406004C83CF /* CoreData.framework */,
 				52BE095CBD8408E8ECB48F89 /* iOS */,
+				CF90722223D89ED4C57A6ED4 /* tvOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -849,6 +967,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		58551A09FF05F930F440E8B8 /* GameLink TV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D3BC536F813BE11D85D67D2 /* Build configuration list for PBXNativeTarget "GameLink TV" */;
+			buildPhases = (
+				F85B7ED5C156BEBB8E2FD1C0 /* Sources */,
+				040EFBFA5B931E49BFF95364 /* Frameworks */,
+				59ECB81C685F047706FF3FA0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7243B602004708AFA93DB7C6 /* PBXTargetDependency */,
+			);
+			name = "GameLink TV";
+			packageProductDependencies = (
+				58783CBDCD896B0CA699E0EB /* OpenSSL */,
+			);
+			productName = "GameLink TV";
+			productReference = E513C81A9037F2B837A9ECCA /* GameLink TV.app */;
+			productType = "com.apple.product-type.application";
+		};
 		AD28F795899E19442057D09B /* GameLink */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 743D29C08CBF267C0BDB042B /* Build configuration list for PBXNativeTarget "GameLink" */;
@@ -962,6 +1101,7 @@
 				FB290CED19B2C406004C83CF /* Moonlight */,
 				FB1A67522132419700507771 /* Moonlight TV */,
 				AD28F795899E19442057D09B /* GameLink */,
+				58551A09FF05F930F440E8B8 /* GameLink TV */,
 			);
 		};
 /* End PBXProject section */
@@ -984,6 +1124,19 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		59ECB81C685F047706FF3FA0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				865B69663045EDE600DB2D8C /* Settings.bundle in Resources */,
+				B3B22F21AD42C73F19473895 /* Images.xcassets in Resources */,
+				865B69643045E89500DB2D8C /* Images.xcassets in Resources */,
+				5B6C2D0F8DA72529FB9AD642 /* GameLinkTV.storyboard in Resources */,
+				8FFA1FE951757A3E362F1425 /* Assets.xcassets in Resources */,
+				62C5EDEB4791A0B3F32C1CD5 /* GameLinkTVLaunch.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B2A27D0E4714EDD1DF4E6DEA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1076,6 +1229,59 @@
 				788784B734A64C1AF13867C2 /* GLControllerListViewController.m in Sources */,
 				EB2B733FAD551B959491ACB3 /* GLControllerRemapViewController.m in Sources */,
 				E365D3ED4F11556C8A819859 /* GLControllerNavigator.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F85B7ED5C156BEBB8E2FD1C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9E87677FA2EFECF171697547 /* HapticContext.m in Sources */,
+				71FA8E79A27305342A137EF2 /* Controller.m in Sources */,
+				C59B7359A32AD815C06E4057 /* StreamFrameViewController.m in Sources */,
+				F6F887110DC702DB7223A5DA /* mkcert.c in Sources */,
+				42939E84A98FFDD7EDAC66E0 /* Limelight.xcdatamodeld in Sources */,
+				0DD6D3C4EBADA34022FF27AE /* Utils.m in Sources */,
+				12BE001311CC0A713341C196 /* Logger.m in Sources */,
+				764EDA8F47C99635570FE268 /* ControllerSupport.m in Sources */,
+				EABA2574DA90804F5B47A384 /* StreamView.m in Sources */,
+				783C173A8090CCF9B7BA33ED /* X1Kit.swift in Sources */,
+				A9855ACB225C098C47DBA9F8 /* OnScreenControls.m in Sources */,
+				9C1E7C2FDF203AF93477B750 /* KeyboardSupport.m in Sources */,
+				488F0E2F67CED5993D6256C1 /* DataManager.m in Sources */,
+				A5D382BBF55CDA5F439328DC /* TemporaryApp.m in Sources */,
+				AFA3E7E7F4E383C5FC693977 /* TemporaryHost.m in Sources */,
+				7D98287E619722097D0A8590 /* TemporarySettings.m in Sources */,
+				B75A49554D2BFFB6E2BF85BF /* AppAssetManager.m in Sources */,
+				CA132C61C06F03DC3A576D33 /* AppAssetRetriever.m in Sources */,
+				0457B8F9E919C07472474B52 /* PairManager.m in Sources */,
+				F3C05E63F433F09F93AB3A4F /* WakeOnLanManager.m in Sources */,
+				50E2902B941A70EC5C4DF103 /* ConnectionHelper.m in Sources */,
+				8F448F72440C3CB094D02BEA /* DiscoveryManager.m in Sources */,
+				8E67E2C61F67F98559FA74C9 /* DiscoveryWorker.m in Sources */,
+				31F51566C47F8F9B3695D7B0 /* MDNSManager.m in Sources */,
+				A3A1940F06D70B9CB968544D /* HttpManager.m in Sources */,
+				85EC0C101DF12E5AE3F0112E /* HttpRequest.m in Sources */,
+				D673BDC290B04BF4BC24B6AB /* HttpResponse.m in Sources */,
+				4ABC6E7F98CB3582271E6169 /* ServerInfoResponse.m in Sources */,
+				F495437EB7BFCEE6DF177C74 /* AppAssetResponse.m in Sources */,
+				33CDE372F3F2FC23B1E9F2D7 /* AppListResponse.m in Sources */,
+				52F2432FEF1E1717C716B1F9 /* RelativeTouchHandler.m in Sources */,
+				6575CE292FCA587D9A950AF8 /* CryptoManager.m in Sources */,
+				10C31CC0DFEEBC38A85B778A /* IdManager.m in Sources */,
+				16DF9B9DD5338F8F93B7BB62 /* KeyboardInputField.m in Sources */,
+				26B0D5E66D444D5E0C180F70 /* Connection.m in Sources */,
+				E182504DF8ADA51F76A005CB /* StreamConfiguration.m in Sources */,
+				9F571A63795E452CD38FA323 /* StreamManager.m in Sources */,
+				821AE2AFA6D4ABFF866A52B2 /* VideoDecoderRenderer.m in Sources */,
+				CB5C6417DC73A6CA5E2E6826 /* ControllerButtonRemap.m in Sources */,
+				E527B38697F2A4C07EA9E703 /* AppDelegate.m in Sources */,
+				81147D2DEAB1D776D801B800 /* main.m in Sources */,
+				0BE3E9611440152A46F2098A /* GLLaunchViewController.m in Sources */,
+				5C93E4E50F0B574259F43952 /* GLSettingsViewController.m in Sources */,
+				3A02683045C2CE78813D122B /* GLControllerListViewController.m in Sources */,
+				50F2FBD7D83C85CC28857AC9 /* GLControllerRemapViewController.m in Sources */,
+				B7790568D99C6AA1096537D5 /* GLControllerNavigator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1193,6 +1399,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7243B602004708AFA93DB7C6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "moonlight-common-tv";
+			targetProxy = 86DE777DA25951DABA165377 /* PBXContainerItemProxy */;
+		};
 		98AB2E861CAD468B0089BB98 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "moonlight-common";
@@ -1253,7 +1464,7 @@
 				INFOPLIST_FILE = "GameLink/GameLink-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GameLink;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1286,6 +1497,127 @@
 			};
 			name = Debug;
 		};
+		BD8A85169C1FE20ECDE7E964 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Launch Image";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5DC662YQU8;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Limelight/Limelight-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/moonlight-common/moonlight-common-c/src",
+					"$(SDKROOT)/usr/include/libxml2/**",
+					"$(PROJECT_DIR)/libs/**",
+				);
+				INFOPLIST_FILE = "GameLink/GameLinkTV-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = GameLink;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=appletvos*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs/opus/lib/tvOS",
+					"$(PROJECT_DIR)/libs/SDL2/lib/tvOS",
+					"$(PROJECT_DIR)/libs/FFmpeg/lib/tvOS",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=appletvsimulator*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs/opus/lib/tvOS-Sim",
+					"$(PROJECT_DIR)/libs/SDL2/lib/tvOS-Sim",
+					"$(PROJECT_DIR)/libs/FFmpeg/lib/tvOS-Sim",
+				);
+				MARKETING_VERSION = 9.0.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kgiann.GameLinkTV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "Limelight/Input/Moonlight-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Moonlight-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 15.6;
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		DE6CC2988A2482A3C24A9C4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Launch Image";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5DC662YQU8;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Limelight/Limelight-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/moonlight-common/moonlight-common-c/src",
+					"$(SDKROOT)/usr/include/libxml2/**",
+					"$(PROJECT_DIR)/libs/**",
+				);
+				INFOPLIST_FILE = "GameLink/GameLinkTV-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = GameLink;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=appletvos*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs/opus/lib/tvOS",
+					"$(PROJECT_DIR)/libs/SDL2/lib/tvOS",
+					"$(PROJECT_DIR)/libs/FFmpeg/lib/tvOS",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=appletvsimulator*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs/opus/lib/tvOS-Sim",
+					"$(PROJECT_DIR)/libs/SDL2/lib/tvOS-Sim",
+					"$(PROJECT_DIR)/libs/FFmpeg/lib/tvOS-Sim",
+				);
+				MARKETING_VERSION = 9.0.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kgiann.GameLinkTV;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Limelight/Input/Moonlight-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Moonlight-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 15.6;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
 		ECBA5DBA77B4EFD663677146 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1309,7 +1641,7 @@
 				INFOPLIST_FILE = "GameLink/GameLink-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GameLink;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1678,6 +2010,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		7D3BC536F813BE11D85D67D2 /* Build configuration list for PBXNativeTarget "GameLink TV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD8A85169C1FE20ECDE7E964 /* Release */,
+				DE6CC2988A2482A3C24A9C4B /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FB1A67682132419A00507771 /* Build configuration list for PBXNativeTarget "Moonlight TV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1719,6 +2060,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		58783CBDCD896B0CA699E0EB /* OpenSSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */;
+			productName = OpenSSL;
+		};
 		7A161A4C3BD8BD5A9BD12E60 /* OpenSSL */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F74BEF9A2C1A705600224667 /* XCRemoteSwiftPackageReference "OpenSSL-Package" */;

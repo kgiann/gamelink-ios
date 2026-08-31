@@ -10,6 +10,12 @@
 
 @import GameController;
 
+#if TARGET_OS_TV
+#define GL_GROUPED_TABLE_STYLE UITableViewStyleGrouped
+#else
+#define GL_GROUPED_TABLE_STYLE UITableViewStyleInsetGrouped
+#endif
+
 @interface GLControllerListViewController () <GLControllerNavigatorDelegate>
 @end
 
@@ -22,7 +28,7 @@
 }
 
 - (instancetype)init {
-    return [super initWithStyle:UITableViewStyleInsetGrouped];
+    return [super initWithStyle:GL_GROUPED_TABLE_STYLE];
 }
 
 - (void)viewDidLoad {

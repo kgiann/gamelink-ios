@@ -41,6 +41,7 @@
 		788784B734A64C1AF13867C2 /* GLControllerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */; };
 		7C43BA7FD361D17840BEE954 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
 		865B695B3044A9C200DB2D8C /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = 865B695A3044A9BD00DB2D8C /* TODO.md */; };
+		865B695F304547FB00DB2D8C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 865B695E304547FB00DB2D8C /* Images.xcassets */; };
 		86B760923044753500438B9B /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3495219FF36FB002D2A60 /* SWRevealViewController.m */; };
 		87F5C2BC2B0F792E53457B1B /* DiscoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678F91A55FFAD00377732 /* DiscoveryManager.m */; };
 		8A31FDBD240DE789EDEA22CD /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461719F646E200339C8A /* Connection.m */; };
@@ -261,6 +262,7 @@
 		72DEBEB6375BB63F4B5FE47D /* GLSettingsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLSettingsViewController.h; sourceTree = "<group>"; };
 		81DB5985C53BFA9FA9692B12 /* AppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		865B695A3044A9BD00DB2D8C /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		865B695E304547FB00DB2D8C /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8BC0A3AF7CE81DE924CABF92 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerNavigator.m; sourceTree = "<group>"; };
@@ -489,6 +491,7 @@
 		3DDFFD366782D72E36D33F4B /* GameLink */ = {
 			isa = PBXGroup;
 			children = (
+				865B695E304547FB00DB2D8C /* Images.xcassets */,
 				865B695A3044A9BD00DB2D8C /* TODO.md */,
 				A0CF69F04A0DD5F65FF251A4 /* main.m */,
 				81DB5985C53BFA9FA9692B12 /* AppDelegate.h */,
@@ -988,6 +991,7 @@
 				AF0C1EAD16367EE0CDEA33E3 /* InfoPlist.strings in Resources */,
 				B43808C55FD19106E911D591 /* Images.xcassets in Resources */,
 				50B6D35C942B62C89E64D62B /* GameLink.storyboard in Resources */,
+				865B695F304547FB00DB2D8C /* Images.xcassets in Resources */,
 				442B640B78328044AA94749F /* GameLinkLaunch.storyboard in Resources */,
 				865B695B3044A9C200DB2D8C /* TODO.md in Resources */,
 			);
@@ -1229,7 +1233,7 @@
 		1EC6B0D576C7FB70B22832D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Gamelink-AppIcon";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -1285,7 +1289,7 @@
 		ECBA5DBA77B4EFD663677146 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Gamelink-AppIcon";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;

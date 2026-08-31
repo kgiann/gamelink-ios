@@ -55,7 +55,7 @@
 		5ACB1B10F4A35641F29FAD1F /* libmoonlight-common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AB2E841CAD46840089BB98 /* libmoonlight-common.a */; };
 		5B6C2D0F8DA72529FB9AD642 /* GameLinkTV.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC6FB139C9AC2AEBFC68AD8E /* GameLinkTV.storyboard */; };
 		5C634EDCD3EEA483E9DB0468 /* Logger.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD1C8E11A8AD71400C6703C /* Logger.m */; };
-		5C93E4E50F0B574259F43952 /* GLSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */; };
+		5C93E4E50F0B574259F43952 /* GLConnectionSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2B317D8F49941D451D176 /* GLConnectionSettingsViewController.m */; };
 		5F42FECE2D99CB76A4E27F47 /* mkcert.c in Sources */ = {isa = PBXBuildFile; fileRef = FB89460719F646E200339C8A /* mkcert.c */; };
 		62C5EDEB4791A0B3F32C1CD5 /* GameLinkTVLaunch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97F9E5BCF997EA08AD00387F /* GameLinkTVLaunch.storyboard */; };
 		640EBBCF033C0C0038627EF3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0CF69F04A0DD5F65FF251A4 /* main.m */; };
@@ -79,6 +79,8 @@
 		865B69643045E89500DB2D8C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 865B695E304547FB00DB2D8C /* Images.xcassets */; };
 		865B69663045EDE600DB2D8C /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 693B3A9A218638CD00982F7B /* Settings.bundle */; };
 		86B760923044753500438B9B /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3495219FF36FB002D2A60 /* SWRevealViewController.m */; };
+		86D880F130461E5A009F1151 /* GLSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86D880F030461E5A009F1151 /* GLSettingsViewController.m */; };
+		86D880F230461E5A009F1151 /* GLSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86D880F030461E5A009F1151 /* GLSettingsViewController.m */; };
 		87F5C2BC2B0F792E53457B1B /* DiscoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678F91A55FFAD00377732 /* DiscoveryManager.m */; };
 		8A31FDBD240DE789EDEA22CD /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461719F646E200339C8A /* Connection.m */; };
 		8D265497BA06D452C810D6B8 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FB1A67E921324DF300507771 /* libxml2.tbd */; };
@@ -148,7 +150,7 @@
 		C343DC81F3416C10695B3B0A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF519B2C406004C83CF /* UIKit.framework */; };
 		C59B7359A32AD815C06E4057 /* StreamFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462719F646E200339C8A /* StreamFrameViewController.m */; };
 		C5CD41DB809B6921FE2C9A8D /* AppListResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD3F1A7E127D00872C98 /* AppListResponse.m */; };
-		C6BC7E1BB618E0430C942BDB /* GLSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */; };
+		C6BC7E1BB618E0430C942BDB /* GLConnectionSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE2B317D8F49941D451D176 /* GLConnectionSettingsViewController.m */; };
 		C9238CF9323536B12FB8E491 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB1A67E421324A1F00507771 /* CoreData.framework */; };
 		CA132C61C06F03DC3A576D33 /* AppAssetRetriever.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD311A7D867C00872C98 /* AppAssetRetriever.m */; };
 		CB5C6417DC73A6CA5E2E6826 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
@@ -321,7 +323,7 @@
 
 /* Begin PBXFileReference section */
 		20EB23EB96954CF62B06F658 /* GLLaunchViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLLaunchViewController.m; sourceTree = "<group>"; };
-		2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLSettingsViewController.m; sourceTree = "<group>"; };
+		2CE2B317D8F49941D451D176 /* GLConnectionSettingsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLConnectionSettingsViewController.m; sourceTree = "<group>"; };
 		2D1E84742327F1E74E5B681D /* ControllerButtonRemap.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ControllerButtonRemap.h; sourceTree = "<group>"; };
 		387BF410D65F3D530B91AA94 /* GameLink-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GameLink-Info.plist"; sourceTree = "<group>"; };
 		4BFA2DD33A936FC5BC1DA033 /* GLControllerRemapViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLControllerRemapViewController.h; sourceTree = "<group>"; };
@@ -330,11 +332,13 @@
 		62B79DC880E95931F2174F0A /* GameLink.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = GameLink.storyboard; sourceTree = "<group>"; };
 		662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerRemapViewController.m; sourceTree = "<group>"; };
 		693B3A9A218638CD00982F7B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
-		72DEBEB6375BB63F4B5FE47D /* GLSettingsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLSettingsViewController.h; sourceTree = "<group>"; };
+		72DEBEB6375BB63F4B5FE47D /* GLConnectionSettingsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLConnectionSettingsViewController.h; sourceTree = "<group>"; };
 		7CF4D700B65360B6A5DC0BE2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		81DB5985C53BFA9FA9692B12 /* AppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		865B695A3044A9BD00DB2D8C /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		865B695E304547FB00DB2D8C /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		86D880EF30461E4C009F1151 /* GLSettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GLSettingsViewController.h; sourceTree = "<group>"; };
+		86D880F030461E5A009F1151 /* GLSettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GLSettingsViewController.m; sourceTree = "<group>"; };
 		87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8BC0A3AF7CE81DE924CABF92 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerNavigator.m; sourceTree = "<group>"; };
@@ -602,20 +606,22 @@
 				87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */,
 				B1AC790FA38824B393F82D91 /* GLLaunchViewController.h */,
 				20EB23EB96954CF62B06F658 /* GLLaunchViewController.m */,
-				72DEBEB6375BB63F4B5FE47D /* GLSettingsViewController.h */,
-				2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */,
+				72DEBEB6375BB63F4B5FE47D /* GLConnectionSettingsViewController.h */,
+				2CE2B317D8F49941D451D176 /* GLConnectionSettingsViewController.m */,
 				62B79DC880E95931F2174F0A /* GameLink.storyboard */,
 				387BF410D65F3D530B91AA94 /* GameLink-Info.plist */,
 				F1D9EA65D097F0FEDEE5E9F1 /* GameLinkLaunch.storyboard */,
-				F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */,
-				662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */,
 				4F3ADBA343D0585F045FED54 /* GLControllerListViewController.h */,
+				F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */,
 				4BFA2DD33A936FC5BC1DA033 /* GLControllerRemapViewController.h */,
+				662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */,
 				90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */,
 				AA60C635E202E1FE4203C187 /* GLControllerNavigator.h */,
 				CC6FB139C9AC2AEBFC68AD8E /* GameLinkTV.storyboard */,
 				DDD58384F2903271A79C24E1 /* GameLinkTV-Info.plist */,
 				97F9E5BCF997EA08AD00387F /* GameLinkTVLaunch.storyboard */,
+				86D880EF30461E4C009F1151 /* GLSettingsViewController.h */,
+				86D880F030461E5A009F1151 /* GLSettingsViewController.m */,
 			);
 			path = GameLink;
 			sourceTree = "<group>";
@@ -1211,6 +1217,7 @@
 				F89B31319C97CC53455ABBD4 /* OnScreenControls.m in Sources */,
 				3507B5E1F0995F4D4D8C89F1 /* X1Kit.swift in Sources */,
 				9BE63FEB8B6C6BCA711CCB54 /* AppAssetManager.m in Sources */,
+				86D880F130461E5A009F1151 /* GLSettingsViewController.m in Sources */,
 				A30A02CD817E88E44A722ADF /* DiscoveryWorker.m in Sources */,
 				86B760923044753500438B9B /* SWRevealViewController.m in Sources */,
 				93090CC577D0E65919272D72 /* ControllerSupport.m in Sources */,
@@ -1223,7 +1230,7 @@
 				EAE5369758D13BCBA5C0A6EE /* AppDelegate.m in Sources */,
 				640EBBCF033C0C0038627EF3 /* main.m in Sources */,
 				E0E3466394C7A4A5B550EE4D /* GLLaunchViewController.m in Sources */,
-				C6BC7E1BB618E0430C942BDB /* GLSettingsViewController.m in Sources */,
+				C6BC7E1BB618E0430C942BDB /* GLConnectionSettingsViewController.m in Sources */,
 				4309E8E6EEE53A5D0FB2F2E9 /* AbsoluteTouchHandler.m in Sources */,
 				73241FAB47FF419A436A5A89 /* ControllerButtonRemap.m in Sources */,
 				788784B734A64C1AF13867C2 /* GLControllerListViewController.m in Sources */,
@@ -1274,11 +1281,12 @@
 				E182504DF8ADA51F76A005CB /* StreamConfiguration.m in Sources */,
 				9F571A63795E452CD38FA323 /* StreamManager.m in Sources */,
 				821AE2AFA6D4ABFF866A52B2 /* VideoDecoderRenderer.m in Sources */,
+				86D880F230461E5A009F1151 /* GLSettingsViewController.m in Sources */,
 				CB5C6417DC73A6CA5E2E6826 /* ControllerButtonRemap.m in Sources */,
 				E527B38697F2A4C07EA9E703 /* AppDelegate.m in Sources */,
 				81147D2DEAB1D776D801B800 /* main.m in Sources */,
 				0BE3E9611440152A46F2098A /* GLLaunchViewController.m in Sources */,
-				5C93E4E50F0B574259F43952 /* GLSettingsViewController.m in Sources */,
+				5C93E4E50F0B574259F43952 /* GLConnectionSettingsViewController.m in Sources */,
 				3A02683045C2CE78813D122B /* GLControllerListViewController.m in Sources */,
 				50F2FBD7D83C85CC28857AC9 /* GLControllerRemapViewController.m in Sources */,
 				B7790568D99C6AA1096537D5 /* GLControllerNavigator.m in Sources */,

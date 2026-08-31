@@ -170,19 +170,31 @@
     if (_items.count == 0) {
         cell.textLabel.text = @"No controllers connected";
         cell.detailTextLabel.text = @"Connect a controller to configure it.";
+#if TARGET_OS_TV
+        cell.textLabel.highlightedTextColor = [UIColor blackColor];
+        cell.detailTextLabel.highlightedTextColor = [UIColor blackColor];
+#else
         cell.textLabel.textColor = [UIColor secondaryLabelColor];
+#endif
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
 
     NSDictionary* item = _items[indexPath.row];
-    cell.textLabel.text = item[@"name"];
+#if TARGET_OS_TV
+    cell.textLabel.highlightedTextColor = [UIColor blackColor];
+#else
     cell.textLabel.textColor = [UIColor labelColor];
+#endif
+    cell.textLabel.text = item[@"name"];
     cell.detailTextLabel.text = [item[@"connected"] boolValue] ? @"Connected" : @"Not connected";
     cell.detailTextLabel.textColor = [item[@"connected"] boolValue]
         ? [UIColor systemGreenColor]
         : [UIColor secondaryLabelColor];
+#if TARGET_OS_TV
+    cell.detailTextLabel.highlightedTextColor = [UIColor blackColor];
+#endif
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     return cell;

@@ -18,6 +18,9 @@ static NSString* DB_NAME = @"GameLink_iOS.sqlite";
 #endif
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if (@available(iOS 13.0, tvOS 13.0, *)) {
+        self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    }
     return YES;
 }
 

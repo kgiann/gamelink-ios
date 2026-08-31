@@ -1,0 +1,2 @@
+- [ ] Quit host app on stream end even on user swipe
+- [ ] Be able to cancel connecting stage

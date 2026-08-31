@@ -4,6 +4,7 @@
 //
 
 #import "GLSettingsViewController.h"
+#import "GLControllerListViewController.h"
 #import "DataManager.h"
 #import "TemporarySettings.h"
 
@@ -173,7 +174,30 @@ static const int bitrateTable[] = {
     [_scrollView addSubview:_bitrateSlider];
     y += 34 + spacing * 3;
 
+    // --- Controller Mapping ---
+    UILabel* controllerLabel = [self makeSectionLabel:@"CONTROLLER"];
+    controllerLabel.frame = CGRectMake(margin, y, width, labelHeight);
+    [_scrollView addSubview:controllerLabel];
+    y += labelHeight + 4;
+
+    UIButton* mappingButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [mappingButton setTitle:@"Button Mapping" forState:UIControlStateNormal];
+    mappingButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightRegular];
+    mappingButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    mappingButton.backgroundColor = [UIColor colorWithWhite:0.2 alpha:1.0];
+    mappingButton.layer.cornerRadius = 8;
+    mappingButton.contentEdgeInsets = UIEdgeInsetsMake(0, 12, 0, 12);
+    mappingButton.frame = CGRectMake(margin, y, width, fieldHeight);
+    [mappingButton addTarget:self action:@selector(openControllerMapping) forControlEvents:UIControlEventTouchUpInside];
+    [_scrollView addSubview:mappingButton];
+    y += fieldHeight + spacing * 3;
+
     _scrollView.contentSize = CGSizeMake(maxContentWidth, y);
+}
+
+- (void)openControllerMapping {
+    GLControllerListViewController* vc = [[GLControllerListViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (UILabel*)makeSectionLabel:(NSString*)text {

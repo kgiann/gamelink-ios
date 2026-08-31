@@ -24,6 +24,7 @@
 		36398CABB7DF1C485EBF6ADD /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A032AF60F5300C5A11C /* libavcodec.a */; };
 		4135326F91D4E811C2857A69 /* TemporaryHost.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D5856C1C0EA79600F6CC00 /* TemporaryHost.m */; };
 		4309E8E6EEE53A5D0FB2F2E9 /* AbsoluteTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9819CC21254F180F008A7C8E /* AbsoluteTouchHandler.m */; };
+		43455A28308D63A57441727D /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
 		442B640B78328044AA94749F /* GameLinkLaunch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1D9EA65D097F0FEDEE5E9F1 /* GameLinkLaunch.storyboard */; };
 		50B58FB31DE47E6531A91FFF /* RelativeTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9819CC13254F107A008A7C8E /* RelativeTouchHandler.m */; };
 		50B6D35C942B62C89E64D62B /* GameLink.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62B79DC880E95931F2174F0A /* GameLink.storyboard */; };
@@ -35,7 +36,11 @@
 		66F371AADBC73DC0771FCE82 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BEC2791281100E43572 /* CoreMotion.framework */; };
 		693B3A9B218638CD00982F7B /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 693B3A9A218638CD00982F7B /* Settings.bundle */; };
 		71069F3A6316D16F0BE0BD0F /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98181BE82791275D00E43572 /* libSDL2.a */; };
+		73241FAB47FF419A436A5A89 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
 		759ABE32B5A4F52901FA7E61 /* MDNSManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461219F646E200339C8A /* MDNSManager.m */; };
+		788784B734A64C1AF13867C2 /* GLControllerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */; };
+		7C43BA7FD361D17840BEE954 /* ControllerButtonRemap.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */; };
+		865B695B3044A9C200DB2D8C /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = 865B695A3044A9BD00DB2D8C /* TODO.md */; };
 		86B760923044753500438B9B /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD3495219FF36FB002D2A60 /* SWRevealViewController.m */; };
 		87F5C2BC2B0F792E53457B1B /* DiscoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB4678F91A55FFAD00377732 /* DiscoveryManager.m */; };
 		8A31FDBD240DE789EDEA22CD /* Connection.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89461719F646E200339C8A /* Connection.m */; };
@@ -96,11 +101,13 @@
 		DCEA3FB0AD7F02F58545C2D1 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = 7A161A4C3BD8BD5A9BD12E60 /* OpenSSL */; };
 		DEA9DD292F81DCCC37BEC0EB /* HapticContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9827E7A22514366900F25707 /* HapticContext.m */; };
 		E0E3466394C7A4A5B550EE4D /* GLLaunchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20EB23EB96954CF62B06F658 /* GLLaunchViewController.m */; };
+		E365D3ED4F11556C8A819859 /* GLControllerNavigator.m in Sources */ = {isa = PBXBuildFile; fileRef = 90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */; };
 		E3D60DA47CAB6973BCF79F2B /* StreamView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89460D19F646E200339C8A /* StreamView.m */; };
 		E4FDD1DC766BC3FCB00579C7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4679001A57048000377732 /* CoreFoundation.framework */; };
 		E60CD5CC9983584E6FACEC86 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = FB9AFD361A7E02DB00872C98 /* HttpRequest.m */; };
 		E7971141B17D08652E867389 /* StreamFrameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB89462719F646E200339C8A /* StreamFrameViewController.m */; };
 		EAE5369758D13BCBA5C0A6EE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */; };
+		EB2B733FAD551B959491ACB3 /* GLControllerRemapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */; };
 		F23ED00C11C54E2AD64524D2 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98882A052AF60F5300C5A11C /* libavformat.a */; };
 		F29FC41AC76E44DF40748DF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB290CF119B2C406004C83CF /* Foundation.framework */; };
 		F74BEF9C2C1A705600224667 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F74BEF9B2C1A705600224667 /* OpenSSL */; };
@@ -243,14 +250,21 @@
 /* Begin PBXFileReference section */
 		20EB23EB96954CF62B06F658 /* GLLaunchViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLLaunchViewController.m; sourceTree = "<group>"; };
 		2CE2B317D8F49941D451D176 /* GLSettingsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLSettingsViewController.m; sourceTree = "<group>"; };
+		2D1E84742327F1E74E5B681D /* ControllerButtonRemap.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ControllerButtonRemap.h; sourceTree = "<group>"; };
 		387BF410D65F3D530B91AA94 /* GameLink-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "GameLink-Info.plist"; sourceTree = "<group>"; };
+		4BFA2DD33A936FC5BC1DA033 /* GLControllerRemapViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLControllerRemapViewController.h; sourceTree = "<group>"; };
+		4F3ADBA343D0585F045FED54 /* GLControllerListViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLControllerListViewController.h; sourceTree = "<group>"; };
 		566E9D2B2770B23A00EF7BFE /* Moonlight v1.7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Moonlight v1.7.xcdatamodel"; sourceTree = "<group>"; };
 		62B79DC880E95931F2174F0A /* GameLink.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = GameLink.storyboard; sourceTree = "<group>"; };
+		662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerRemapViewController.m; sourceTree = "<group>"; };
 		693B3A9A218638CD00982F7B /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		72DEBEB6375BB63F4B5FE47D /* GLSettingsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLSettingsViewController.h; sourceTree = "<group>"; };
 		81DB5985C53BFA9FA9692B12 /* AppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		865B695A3044A9BD00DB2D8C /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8BC0A3AF7CE81DE924CABF92 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerNavigator.m; sourceTree = "<group>"; };
+		96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonRemap.m; sourceTree = "<group>"; };
 		9803CCAB254F9EAF00EE185E /* ConnectionCallbacks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectionCallbacks.h; sourceTree = "<group>"; };
 		98132E8C20BC9A62007A053F /* Moonlight v1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Moonlight v1.1.xcdatamodel"; sourceTree = "<group>"; };
 		98181BE82791275D00E43572 /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = libs/SDL2/lib/iOS/libSDL2.a; sourceTree = "<group>"; };
@@ -292,12 +306,14 @@
 		98D5856E1C0ED0E800F6CC00 /* TemporarySettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TemporarySettings.h; path = Database/TemporarySettings.h; sourceTree = "<group>"; };
 		98D5856F1C0ED0E800F6CC00 /* TemporarySettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TemporarySettings.m; path = Database/TemporarySettings.m; sourceTree = "<group>"; };
 		A0CF69F04A0DD5F65FF251A4 /* main.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AA60C635E202E1FE4203C187 /* GLControllerNavigator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLControllerNavigator.h; sourceTree = "<group>"; };
 		B1AC790FA38824B393F82D91 /* GLLaunchViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = GLLaunchViewController.h; sourceTree = "<group>"; };
 		D4746EEA1CBC740C006FB401 /* Moonlight-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Moonlight-Bridging-Header.h"; path = "Input/Moonlight-Bridging-Header.h"; sourceTree = "<group>"; };
 		DC1F5A05206436B10037755F /* ConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionHelper.h; sourceTree = "<group>"; };
 		DC1F5A06206436B20037755F /* ConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionHelper.m; sourceTree = "<group>"; };
 		F1D9EA65D097F0FEDEE5E9F1 /* GameLinkLaunch.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; path = GameLinkLaunch.storyboard; sourceTree = "<group>"; };
 		F4320501B44EAE893A3B2E9D /* GameLink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameLink.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = GLControllerListViewController.m; sourceTree = "<group>"; };
 		FB1A674B2131E65900507771 /* KeyboardSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardSupport.h; sourceTree = "<group>"; };
 		FB1A674C2131E65900507771 /* KeyboardSupport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyboardSupport.m; sourceTree = "<group>"; };
 		FB1A67532132419700507771 /* Moonlight TV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Moonlight TV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -473,6 +489,7 @@
 		3DDFFD366782D72E36D33F4B /* GameLink */ = {
 			isa = PBXGroup;
 			children = (
+				865B695A3044A9BD00DB2D8C /* TODO.md */,
 				A0CF69F04A0DD5F65FF251A4 /* main.m */,
 				81DB5985C53BFA9FA9692B12 /* AppDelegate.h */,
 				87D7D3FDB76A806C64BE7A78 /* AppDelegate.m */,
@@ -483,6 +500,12 @@
 				62B79DC880E95931F2174F0A /* GameLink.storyboard */,
 				387BF410D65F3D530B91AA94 /* GameLink-Info.plist */,
 				F1D9EA65D097F0FEDEE5E9F1 /* GameLinkLaunch.storyboard */,
+				F9E342E19ACDD7D01BF3B7D8 /* GLControllerListViewController.m */,
+				662DEE04CE2CB501798E6EF3 /* GLControllerRemapViewController.m */,
+				4F3ADBA343D0585F045FED54 /* GLControllerListViewController.h */,
+				4BFA2DD33A936FC5BC1DA033 /* GLControllerRemapViewController.h */,
+				90C56C2DDA32FE7B9C7B0395 /* GLControllerNavigator.m */,
+				AA60C635E202E1FE4203C187 /* GLControllerNavigator.h */,
 			);
 			path = GameLink;
 			sourceTree = "<group>";
@@ -652,6 +675,8 @@
 				9819CC21254F180F008A7C8E /* AbsoluteTouchHandler.m */,
 				988FCD3F293B091B003050E2 /* KeyboardInputField.h */,
 				988FCD40293B091B003050E2 /* KeyboardInputField.m */,
+				2D1E84742327F1E74E5B681D /* ControllerButtonRemap.h */,
+				96B12B02C45B5C1BE9800319 /* ControllerButtonRemap.m */,
 			);
 			path = Input;
 			sourceTree = "<group>";
@@ -964,6 +989,7 @@
 				B43808C55FD19106E911D591 /* Images.xcassets in Resources */,
 				50B6D35C942B62C89E64D62B /* GameLink.storyboard in Resources */,
 				442B640B78328044AA94749F /* GameLinkLaunch.storyboard in Resources */,
+				865B695B3044A9C200DB2D8C /* TODO.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1042,6 +1068,10 @@
 				E0E3466394C7A4A5B550EE4D /* GLLaunchViewController.m in Sources */,
 				C6BC7E1BB618E0430C942BDB /* GLSettingsViewController.m in Sources */,
 				4309E8E6EEE53A5D0FB2F2E9 /* AbsoluteTouchHandler.m in Sources */,
+				73241FAB47FF419A436A5A89 /* ControllerButtonRemap.m in Sources */,
+				788784B734A64C1AF13867C2 /* GLControllerListViewController.m in Sources */,
+				EB2B733FAD551B959491ACB3 /* GLControllerRemapViewController.m in Sources */,
+				E365D3ED4F11556C8A819859 /* GLControllerNavigator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1095,6 +1125,7 @@
 				FB1A67A7213245BD00507771 /* StreamManager.m in Sources */,
 				FB1A67A9213245BD00507771 /* VideoDecoderRenderer.m in Sources */,
 				FB1A67A12132458C00507771 /* main.m in Sources */,
+				7C43BA7FD361D17840BEE954 /* ControllerButtonRemap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1151,6 +1182,7 @@
 				FB9AFD3A1A7E05CE00872C98 /* ServerInfoResponse.m in Sources */,
 				FB89463119F646E200339C8A /* StreamManager.m in Sources */,
 				988FCD41293B091B003050E2 /* KeyboardInputField.m in Sources */,
+				43455A28308D63A57441727D /* ControllerButtonRemap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

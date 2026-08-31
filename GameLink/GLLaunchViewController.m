@@ -33,6 +33,18 @@ extern NSString* const kGLWidth;
 extern NSString* const kGLHeight;
 extern NSString* const kGLFramerate;
 extern NSString* const kGLBitrate;
+extern NSString* const kGLAudioConfig;
+extern NSString* const kGLOnscreenControls;
+extern NSString* const kGLOptimizeGames;
+extern NSString* const kGLMultiController;
+extern NSString* const kGLSwapABXY;
+extern NSString* const kGLPlayAudioOnPC;
+extern NSString* const kGLPreferredCodec;
+extern NSString* const kGLUseFramePacing;
+extern NSString* const kGLEnableHdr;
+extern NSString* const kGLBtMouse;
+extern NSString* const kGLAbsoluteTouch;
+extern NSString* const kGLStatsOverlay;
 
 typedef NS_ENUM(NSInteger, GLConnectionState) {
     GLStateUnconfigured,
@@ -381,15 +393,23 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     _streamConfig.height = (int)height;
     _streamConfig.width = (int)width;
     _streamConfig.bitRate = (int)bitrate;
-    _streamConfig.optimizeGameSettings = settings.optimizeGames;
-    _streamConfig.playAudioOnPC = settings.playAudioOnPC;
-    _streamConfig.useFramePacing = settings.useFramePacing;
-    _streamConfig.swapABXYButtons = settings.swapABXYButtons;
-    _streamConfig.multiController = settings.multiController;
+
+    // Remaining settings come from NSUserDefaults (durable on tvOS), falling back
+    // to the Core Data defaults.
+    NSInteger audioConfig = [d objectForKey:kGLAudioConfig] ? [d integerForKey:kGLAudioConfig] : [settings.audioConfig integerValue];
+    if (audioConfig == 0) audioConfig = 2;
+    NSInteger preferredCodec = [d objectForKey:kGLPreferredCodec] ? [d integerForKey:kGLPreferredCodec] : settings.preferredCodec;
+    BOOL enableHdr = [d objectForKey:kGLEnableHdr] ? [d boolForKey:kGLEnableHdr] : settings.enableHdr;
+
+    _streamConfig.optimizeGameSettings = [d objectForKey:kGLOptimizeGames] ? [d boolForKey:kGLOptimizeGames] : settings.optimizeGames;
+    _streamConfig.playAudioOnPC = [d objectForKey:kGLPlayAudioOnPC] ? [d boolForKey:kGLPlayAudioOnPC] : settings.playAudioOnPC;
+    _streamConfig.useFramePacing = [d objectForKey:kGLUseFramePacing] ? [d boolForKey:kGLUseFramePacing] : settings.useFramePacing;
+    _streamConfig.swapABXYButtons = [d objectForKey:kGLSwapABXY] ? [d boolForKey:kGLSwapABXY] : settings.swapABXYButtons;
+    _streamConfig.multiController = [d objectForKey:kGLMultiController] ? [d boolForKey:kGLMultiController] : YES;
     _streamConfig.gamepadMask = [ControllerSupport getConnectedGamepadMask:_streamConfig];
 
     int physicalChannels = (int)[AVAudioSession sharedInstance].maximumOutputNumberOfChannels;
-    int channels = MIN([settings.audioConfig intValue], physicalChannels);
+    int channels = MIN((int)audioConfig, physicalChannels);
     if (channels >= 8) {
         _streamConfig.audioConfiguration = AUDIO_CONFIGURATION_71_SURROUND;
     } else if (channels >= 6) {
@@ -400,7 +420,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
     _streamConfig.serverCodecModeSupport = app.host.serverCodecModeSupport;
 
-    switch (settings.preferredCodec) {
+    switch (preferredCodec) {
         case CODEC_PREF_AV1:
 #if defined(__IPHONE_16_0)
             if (VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1)) {
@@ -420,9 +440,9 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     }
 
     if (VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC) &&
-        (_streamConfig.width > 4096 || _streamConfig.height > 4096 || settings.enableHdr)) {
+        (_streamConfig.width > 4096 || _streamConfig.height > 4096 || enableHdr)) {
         _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265;
-        if (settings.enableHdr && (AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10)) {
+        if (enableHdr && (AVPlayer.availableHDRModes & AVPlayerHDRModeHDR10)) {
             _streamConfig.supportedVideoFormats |= VIDEO_FORMAT_H265_MAIN10;
         }
     }

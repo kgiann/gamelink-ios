@@ -1,5 +1,5 @@
 //
-//  GLSettingsViewController.m
+//  GLConnectionSettingsViewController.m
 //  GameLink
 //
 
@@ -14,12 +14,24 @@
 NSString* const kGLHostAddress = @"GLHostAddress";
 NSString* const kGLAppName = @"GLAppName";
 
-// User-facing stream settings are persisted directly in NSUserDefaults (which is
-// durable on both iOS and tvOS), rather than relying on the Core Data store.
+// All user-facing settings are persisted directly in NSUserDefaults (durable on
+// both iOS and tvOS) in addition to the Core Data store.
 NSString* const kGLWidth = @"GLWidth";
 NSString* const kGLHeight = @"GLHeight";
 NSString* const kGLFramerate = @"GLFramerate";
 NSString* const kGLBitrate = @"GLBitrate";
+NSString* const kGLAudioConfig = @"GLAudioConfig";
+NSString* const kGLOnscreenControls = @"GLOnscreenControls";
+NSString* const kGLOptimizeGames = @"GLOptimizeGames";
+NSString* const kGLMultiController = @"GLMultiController";
+NSString* const kGLSwapABXY = @"GLSwapABXY";
+NSString* const kGLPlayAudioOnPC = @"GLPlayAudioOnPC";
+NSString* const kGLPreferredCodec = @"GLPreferredCodec";
+NSString* const kGLUseFramePacing = @"GLUseFramePacing";
+NSString* const kGLEnableHdr = @"GLEnableHdr";
+NSString* const kGLBtMouse = @"GLBtMouse";
+NSString* const kGLAbsoluteTouch = @"GLAbsoluteTouch";
+NSString* const kGLStatsOverlay = @"GLStatsOverlay";
 
 static NSString* bitrateFormat = @"Bitrate: %.1f Mbps";
 static const int bitrateTable[] = {
@@ -50,8 +62,28 @@ static const int bitratePresets[] = {
 #endif
     UILabel* _bitrateLabel;
     NSInteger _bitrate;
+
+    // Additional DataManager settings
+    UISegmentedControl* _audioSelector;
+    UISegmentedControl* _codecSelector;
+    UISegmentedControl* _hdrToggle;
+    UISegmentedControl* _framePacingToggle;
+    UISegmentedControl* _optimizeToggle;
+    UISegmentedControl* _multiControllerToggle;
+    UISegmentedControl* _swapABXYToggle;
+    UISegmentedControl* _audioOnPCToggle;
+    UISegmentedControl* _statsToggle;
+#if !TARGET_OS_TV
+    UISegmentedControl* _oscSelector;
+    UISegmentedControl* _absoluteTouchToggle;
+    UISegmentedControl* _btMouseToggle;
+#endif
+
     UIScrollView* _scrollView;
     UIActivityIndicatorView* _loadingSpinner;
+
+    // Layout metrics (set in buildUI)
+    CGFloat _margin, _contentWidth, _fieldHeight, _labelHeight, _segHeight, _spacing, _y;
 }
 
 - (void)viewDidLoad {
@@ -83,8 +115,9 @@ static const int bitratePresets[] = {
     });
 }
 
+#pragma mark - UI Construction
+
 - (void)buildUI {
-    // Scroll view pinned to safe area so notch/Dynamic Island don't obscure content
     _scrollView = [[UIScrollView alloc] init];
     _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_scrollView];
@@ -95,90 +128,67 @@ static const int bitratePresets[] = {
         [_scrollView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
     ]];
 
-    // Cap content width at 600pt and center it
     CGFloat safeWidth = self.view.bounds.size.width
         - self.view.safeAreaInsets.left
         - self.view.safeAreaInsets.right;
-    CGFloat maxContentWidth = safeWidth; //MIN(safeWidth, 600);
-    CGFloat margin = 20;
-    CGFloat width = maxContentWidth - margin * 2;
-    CGFloat y = 30;
+    _margin = 20;
+    _contentWidth = safeWidth - _margin * 2;
 
     BOOL isTV = (self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomTV);
-    CGFloat fieldHeight = isTV ? 80.0 : 40.0;
-    CGFloat labelHeight = isTV ? 44.0 : 22.0;
-    CGFloat spacing = isTV ? 24.0 : 12.0;
-    CGFloat segHeight = isTV ? 44.0 : 34.0;
+    _fieldHeight = isTV ? 80.0 : 40.0;
+    _labelHeight = isTV ? 44.0 : 22.0;
+    _spacing = isTV ? 24.0 : 12.0;
+    _segHeight = isTV ? 44.0 : 34.0;
+    _y = 30;
 
     // --- Host ---
     UILabel* hostLabel = [self makeSectionLabel:@"HOST ADDRESS"];
-    hostLabel.frame = CGRectMake(margin, y, width, labelHeight);
+    hostLabel.frame = CGRectMake(_margin, _y, _contentWidth, _labelHeight);
     [_scrollView addSubview:hostLabel];
-    y = CGRectGetMaxY(hostLabel.frame) + 4;
+    _y = CGRectGetMaxY(hostLabel.frame) + 4;
 
     _hostField = [self makeTextField:@"e.g. 192.168.1.100"];
-    _hostField.frame = CGRectMake(margin, y, width, fieldHeight);
+    _hostField.frame = CGRectMake(_margin, _y, _contentWidth, _fieldHeight);
     _hostField.keyboardType = UIKeyboardTypeURL;
     _hostField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _hostField.autocorrectionType = UITextAutocorrectionTypeNo;
+    _hostField.returnKeyType = UIReturnKeyNext;
     _hostField.tag = 1;
     [_scrollView addSubview:_hostField];
-    y = CGRectGetMaxY(_hostField.frame) + spacing;
+    _y = CGRectGetMaxY(_hostField.frame) + _spacing;
 
     // --- App Name ---
     UILabel* appLabel = [self makeSectionLabel:@"APP / GAME NAME"];
-    appLabel.frame = CGRectMake(margin, y, width, labelHeight);
+    appLabel.frame = CGRectMake(_margin, _y, _contentWidth, _labelHeight);
     [_scrollView addSubview:appLabel];
-    y = CGRectGetMaxY(appLabel.frame) + 4;
+    _y = CGRectGetMaxY(appLabel.frame) + 4;
 
     _appNameField = [self makeTextField:@"e.g. Desktop or Steam"];
-    _appNameField.frame = CGRectMake(margin, y, width, fieldHeight);
+    _appNameField.frame = CGRectMake(_margin, _y, _contentWidth, _fieldHeight);
     _appNameField.tag = 2;
     [_scrollView addSubview:_appNameField];
-    y = CGRectGetMaxY(_appNameField.frame) + spacing;
-    
-    y += spacing;
-    
-    // --- Resolution ---
-    UILabel* resLabel = [self makeSectionLabel:@"RESOLUTION"];
-    resLabel.frame = CGRectMake(margin, y, width, labelHeight);
-    [_scrollView addSubview:resLabel];
-    y = CGRectGetMaxY(resLabel.frame) + 4;
+    _y = CGRectGetMaxY(_appNameField.frame) + _spacing * 2;
 
+    // --- Resolution ---
     NSMutableArray* resSegments = [NSMutableArray arrayWithObjects:@"720p", @"1080p", nil];
     if (VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC)) {
         [resSegments addObject:@"4K"];
     }
-    _resolutionSelector = [[UISegmentedControl alloc] initWithItems:resSegments];
-    _resolutionSelector.frame = CGRectMake(margin, y, width, segHeight);
-    [_scrollView addSubview:_resolutionSelector];
-    y = CGRectGetMaxY(_resolutionSelector.frame) + spacing;
+    _resolutionSelector = [self appendRow:@"RESOLUTION" items:resSegments];
 
     // --- Frame Rate ---
-    UILabel* fpsLabel = [self makeSectionLabel:@"FRAME RATE"];
-    fpsLabel.frame = CGRectMake(margin, y, width, labelHeight);
-    [_scrollView addSubview:fpsLabel];
-    y = CGRectGetMaxY(fpsLabel.frame) + 4;
-
     NSMutableArray* fpsSegments = [NSMutableArray arrayWithObjects:@"30 FPS", @"60 FPS", nil];
     if ([UIScreen mainScreen].maximumFramesPerSecond > 62) {
         [fpsSegments addObject:@"120 FPS"];
     }
-    _framerateSelector = [[UISegmentedControl alloc] initWithItems:fpsSegments];
-    _framerateSelector.frame = CGRectMake(margin, y, width, segHeight);
+    _framerateSelector = [self appendRow:@"FRAME RATE" items:fpsSegments];
     [_framerateSelector addTarget:self action:@selector(updateBitrate) forControlEvents:UIControlEventValueChanged];
-    [_scrollView addSubview:_framerateSelector];
-    y = CGRectGetMaxY(_framerateSelector.frame) + spacing;
 
     // --- Bitrate ---
-    _bitrateLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, y, width, labelHeight)];
-#if TARGET_OS_TV
-    _bitrateLabel.font = [UIFont systemFontOfSize:20.0 weight:UIFontWeightMedium];
-#else
-    _bitrateLabel.font = [UIFont systemFontOfSize:12.0 weight:UIFontWeightMedium];
-#endif
+    _bitrateLabel = [[UILabel alloc] initWithFrame:CGRectMake(_margin, _y, _contentWidth, _labelHeight)];
+    _bitrateLabel.font = [UIFont systemFontOfSize:(isTV ? 20.0 : 12.0) weight:UIFontWeightMedium];
     [_scrollView addSubview:_bitrateLabel];
-    y = CGRectGetMaxY(_bitrateLabel.frame) + 4;
+    _y = CGRectGetMaxY(_bitrateLabel.frame) + 4;
 
 #if TARGET_OS_TV
     NSMutableArray* presetTitles = [NSMutableArray array];
@@ -186,21 +196,61 @@ static const int bitratePresets[] = {
         [presetTitles addObject:[NSString stringWithFormat:@"%d", bitratePresets[i] / 1000]];
     }
     _bitratePresets = [[UISegmentedControl alloc] initWithItems:presetTitles];
-    _bitratePresets.frame = CGRectMake(margin, y, width, segHeight);
+    _bitratePresets.frame = CGRectMake(_margin, _y, _contentWidth, _segHeight);
     [_bitratePresets addTarget:self action:@selector(bitratePresetChanged) forControlEvents:UIControlEventValueChanged];
     [_scrollView addSubview:_bitratePresets];
-    y = CGRectGetMaxY(_bitratePresets.frame) + spacing;
+    _y = CGRectGetMaxY(_bitratePresets.frame) + _spacing;
 #else
-    _bitrateSlider = [[UISlider alloc] initWithFrame:CGRectMake(margin, y, width, segHeight)];
+    _bitrateSlider = [[UISlider alloc] initWithFrame:CGRectMake(_margin, _y, _contentWidth, _segHeight)];
     _bitrateSlider.minimumValue = 0;
     _bitrateSlider.maximumValue = (sizeof(bitrateTable) / sizeof(*bitrateTable)) - 1;
     [_bitrateSlider addTarget:self action:@selector(bitrateSliderMoved) forControlEvents:UIControlEventValueChanged];
     [_scrollView addSubview:_bitrateSlider];
-    y = CGRectGetMaxY(_bitrateSlider.frame) + spacing;
+    _y = CGRectGetMaxY(_bitrateSlider.frame) + _spacing;
 #endif
-    
-    y += spacing;
-    _scrollView.contentSize = CGSizeMake(maxContentWidth, y);
+
+    // --- Audio ---
+    _audioSelector = [self appendRow:@"AUDIO" items:@[@"Stereo", @"5.1", @"7.1"]];
+
+    // --- Codec ---
+    _codecSelector = [self appendRow:@"VIDEO CODEC" items:@[@"Auto", @"H.264", @"HEVC", @"AV1"]];
+
+    // --- Toggles (common) ---
+    _hdrToggle = [self appendToggleRow:@"HDR"];
+    _framePacingToggle = [self appendToggleRow:@"FRAME PACING"];
+    _optimizeToggle = [self appendToggleRow:@"OPTIMIZE GAME SETTINGS"];
+    _multiControllerToggle = [self appendToggleRow:@"MULTIPLE CONTROLLERS"];
+    _swapABXYToggle = [self appendToggleRow:@"SWAP A/B AND X/Y BUTTONS"];
+    _audioOnPCToggle = [self appendToggleRow:@"PLAY AUDIO ON HOST PC"];
+    _statsToggle = [self appendToggleRow:@"STATS OVERLAY"];
+
+#if !TARGET_OS_TV
+    // --- Touch/mouse options (iOS only) ---
+    _oscSelector = [self appendRow:@"ON-SCREEN CONTROLS" items:@[@"Off", @"Auto", @"Simple", @"Full"]];
+    _absoluteTouchToggle = [self appendToggleRow:@"TOUCHSCREEN AS TRACKPAD"]; // NO = absolute
+    _btMouseToggle = [self appendToggleRow:@"BLUETOOTH MOUSE SUPPORT"];
+#endif
+
+    _y += _spacing;
+    _scrollView.contentSize = CGSizeMake(_contentWidth + _margin * 2, _y);
+}
+
+// Append a section label + segmented control at the current _y and return the control.
+- (UISegmentedControl*)appendRow:(NSString*)title items:(NSArray<NSString*>*)items {
+    UILabel* label = [self makeSectionLabel:title];
+    label.frame = CGRectMake(_margin, _y, _contentWidth, _labelHeight);
+    [_scrollView addSubview:label];
+    _y = CGRectGetMaxY(label.frame) + 4;
+
+    UISegmentedControl* seg = [[UISegmentedControl alloc] initWithItems:items];
+    seg.frame = CGRectMake(_margin, _y, _contentWidth, _segHeight);
+    [_scrollView addSubview:seg];
+    _y = CGRectGetMaxY(seg.frame) + _spacing;
+    return seg;
+}
+
+- (UISegmentedControl*)appendToggleRow:(NSString*)title {
+    return [self appendRow:title items:@[@"Off", @"On"]];
 }
 
 - (void)openControllerMapping {
@@ -234,45 +284,83 @@ static const int bitratePresets[] = {
     return field;
 }
 
+#pragma mark - Load
+
 - (void)populateWithSettings:(TemporarySettings*)settings hostAddress:(NSString*)hostAddress appName:(NSString*)appName {
     _hostField.text = hostAddress;
     _appNameField.text = appName;
 
-    // Prefer values persisted in NSUserDefaults; fall back to Core Data, then defaults.
     NSUserDefaults* d = [NSUserDefaults standardUserDefaults];
+
+    // Resolution / frame rate / bitrate
     NSInteger height = [d integerForKey:kGLHeight] ?: [settings.height integerValue];
     NSInteger fps    = [d integerForKey:kGLFramerate] ?: [settings.framerate integerValue];
     NSInteger br     = [d integerForKey:kGLBitrate] ?: [settings.bitrate integerValue];
     if (height == 0) height = 1080;
     if (fps == 0)    fps = 60;
 
-    // Resolution
     if (height >= 2160 && _resolutionSelector.numberOfSegments > 2) {
-        [_resolutionSelector setSelectedSegmentIndex:2];
+        _resolutionSelector.selectedSegmentIndex = 2;
     } else if (height >= 1080) {
-        [_resolutionSelector setSelectedSegmentIndex:1];
+        _resolutionSelector.selectedSegmentIndex = 1;
     } else {
-        [_resolutionSelector setSelectedSegmentIndex:0];
+        _resolutionSelector.selectedSegmentIndex = 0;
     }
 
-    // Frame rate
     if (fps >= 120 && _framerateSelector.numberOfSegments > 2) {
-        [_framerateSelector setSelectedSegmentIndex:2];
+        _framerateSelector.selectedSegmentIndex = 2;
     } else if (fps >= 60) {
-        [_framerateSelector setSelectedSegmentIndex:1];
+        _framerateSelector.selectedSegmentIndex = 1;
     } else {
-        [_framerateSelector setSelectedSegmentIndex:0];
+        _framerateSelector.selectedSegmentIndex = 0;
     }
 
-    // Bitrate
     _bitrate = br;
     if (_bitrate == 0) {
-        [self updateBitrate]; // derive a sensible default from resolution/fps
+        [self updateBitrate];
     } else {
         [self syncBitrateControlAnimated:NO];
         [self updateBitrateLabel];
     }
+
+    // Audio channels: 2 = Stereo, 6 = 5.1, 8 = 7.1
+    NSInteger audio = [d objectForKey:kGLAudioConfig] ? [d integerForKey:kGLAudioConfig] : [settings.audioConfig integerValue];
+    if (audio == 0) audio = 2;
+    _audioSelector.selectedSegmentIndex = (audio >= 8) ? 2 : (audio >= 6 ? 1 : 0);
+
+    // Codec
+    NSInteger codec = [d objectForKey:kGLPreferredCodec] ? [d integerForKey:kGLPreferredCodec] : settings.preferredCodec;
+    if (codec < 0 || codec > 3) codec = 0;
+    _codecSelector.selectedSegmentIndex = codec;
+
+    // Common toggles
+    _hdrToggle.selectedSegmentIndex             = [self boolPref:kGLEnableHdr fallback:settings.enableHdr] ? 1 : 0;
+    _framePacingToggle.selectedSegmentIndex     = [self boolPref:kGLUseFramePacing fallback:settings.useFramePacing] ? 1 : 0;
+    _optimizeToggle.selectedSegmentIndex        = [self boolPref:kGLOptimizeGames fallback:settings.optimizeGames] ? 1 : 0;
+    // Multiple controllers defaults ON when nothing has been saved yet.
+    _multiControllerToggle.selectedSegmentIndex = [self boolPref:kGLMultiController fallback:YES] ? 1 : 0;
+    _swapABXYToggle.selectedSegmentIndex        = [self boolPref:kGLSwapABXY fallback:settings.swapABXYButtons] ? 1 : 0;
+    _audioOnPCToggle.selectedSegmentIndex       = [self boolPref:kGLPlayAudioOnPC fallback:settings.playAudioOnPC] ? 1 : 0;
+    _statsToggle.selectedSegmentIndex           = [self boolPref:kGLStatsOverlay fallback:settings.statsOverlay] ? 1 : 0;
+
+#if !TARGET_OS_TV
+    NSInteger osc = [d objectForKey:kGLOnscreenControls] ? [d integerForKey:kGLOnscreenControls] : [settings.onscreenControls integerValue];
+    if (osc < 0 || osc > 3) osc = 0;
+    _oscSelector.selectedSegmentIndex = osc;
+    _absoluteTouchToggle.selectedSegmentIndex = [self boolPref:kGLAbsoluteTouch fallback:settings.absoluteTouchMode] ? 0 : 1; // On = trackpad(relative)
+    _btMouseToggle.selectedSegmentIndex = [self boolPref:kGLBtMouse fallback:settings.btMouseSupport] ? 1 : 0;
+#endif
 }
+
+- (BOOL)boolPref:(NSString*)key fallback:(BOOL)fallback {
+    NSUserDefaults* d = [NSUserDefaults standardUserDefaults];
+    if ([d objectForKey:key] != nil) {
+        return [d boolForKey:key];
+    }
+    return fallback;
+}
+
+#pragma mark - Save
 
 - (void)save {
     NSString* host = [_hostField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -288,6 +376,19 @@ static const int bitratePresets[] = {
         return;
     }
 
+    NSInteger audioConfig = [self chosenAudioConfig];
+    NSInteger osc = [self chosenOnscreenControls];
+    BOOL optimize = [self toggleOn:_optimizeToggle];
+    BOOL multiController = [self toggleOn:_multiControllerToggle];
+    BOOL swapABXY = [self toggleOn:_swapABXYToggle];
+    BOOL audioOnPC = [self toggleOn:_audioOnPCToggle];
+    uint32_t codec = (uint32_t)_codecSelector.selectedSegmentIndex;
+    BOOL framePacing = [self toggleOn:_framePacingToggle];
+    BOOL hdr = [self toggleOn:_hdrToggle];
+    BOOL btMouse = [self chosenBtMouse];
+    BOOL absoluteTouch = [self chosenAbsoluteTouch];
+    BOOL stats = [self toggleOn:_statsToggle];
+
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:host forKey:kGLHostAddress];
     [defaults setObject:appName forKey:kGLAppName];
@@ -295,6 +396,18 @@ static const int bitratePresets[] = {
     [defaults setInteger:[self chosenHeight] forKey:kGLHeight];
     [defaults setInteger:[self chosenFPS] forKey:kGLFramerate];
     [defaults setInteger:_bitrate forKey:kGLBitrate];
+    [defaults setInteger:audioConfig forKey:kGLAudioConfig];
+    [defaults setInteger:osc forKey:kGLOnscreenControls];
+    [defaults setBool:optimize forKey:kGLOptimizeGames];
+    [defaults setBool:multiController forKey:kGLMultiController];
+    [defaults setBool:swapABXY forKey:kGLSwapABXY];
+    [defaults setBool:audioOnPC forKey:kGLPlayAudioOnPC];
+    [defaults setInteger:codec forKey:kGLPreferredCodec];
+    [defaults setBool:framePacing forKey:kGLUseFramePacing];
+    [defaults setBool:hdr forKey:kGLEnableHdr];
+    [defaults setBool:btMouse forKey:kGLBtMouse];
+    [defaults setBool:absoluteTouch forKey:kGLAbsoluteTouch];
+    [defaults setBool:stats forKey:kGLStatsOverlay];
     [defaults synchronize];
 
     DataManager* dataMan = [[DataManager alloc] init];
@@ -302,47 +415,58 @@ static const int bitratePresets[] = {
                            framerate:[self chosenFPS]
                               height:[self chosenHeight]
                                width:[self chosenWidth]
-                         audioConfig:2
-                    onscreenControls:0
-                       optimizeGames:NO
-                     multiController:YES
-                     swapABXYButtons:NO
-                           audioOnPC:NO
-                      preferredCodec:CODEC_PREF_AUTO
-                      useFramePacing:NO
-                           enableHdr:NO
-                      btMouseSupport:NO
-                   absoluteTouchMode:NO
-                        statsOverlay:NO];
+                         audioConfig:audioConfig
+                    onscreenControls:osc
+                       optimizeGames:optimize
+                     multiController:multiController
+                     swapABXYButtons:swapABXY
+                           audioOnPC:audioOnPC
+                      preferredCodec:codec
+                      useFramePacing:framePacing
+                           enableHdr:hdr
+                      btMouseSupport:btMouse
+                   absoluteTouchMode:absoluteTouch
+                        statsOverlay:stats];
 }
 
-// Reflect the current _bitrate value in whichever bitrate control this platform uses.
-- (void)syncBitrateControlAnimated:(BOOL)animated {
-#if TARGET_OS_TV
-    int count = (int)(sizeof(bitratePresets) / sizeof(*bitratePresets));
-    int bestIndex = 0;
-    for (int i = 0; i < count; i++) {
-        if (_bitrate >= bitratePresets[i]) {
-            bestIndex = i;
-        }
+#pragma mark - Value helpers
+
+- (BOOL)toggleOn:(UISegmentedControl*)toggle {
+    return toggle != nil && toggle.selectedSegmentIndex == 1;
+}
+
+- (NSInteger)chosenAudioConfig {
+    switch (_audioSelector.selectedSegmentIndex) {
+        case 1: return 6;  // 5.1
+        case 2: return 8;  // 7.1
+        default: return 2; // Stereo
     }
-    _bitratePresets.selectedSegmentIndex = bestIndex;
+}
+
+- (NSInteger)chosenOnscreenControls {
+#if TARGET_OS_TV
+    return 0;
 #else
-    [_bitrateSlider setValue:[self sliderIndexForBitrate:_bitrate] animated:animated];
+    return _oscSelector ? _oscSelector.selectedSegmentIndex : 0;
 #endif
 }
 
+- (BOOL)chosenAbsoluteTouch {
 #if TARGET_OS_TV
-- (void)bitratePresetChanged {
-    NSInteger idx = _bitratePresets.selectedSegmentIndex;
-    int count = (int)(sizeof(bitratePresets) / sizeof(*bitratePresets));
-    if (idx < 0 || idx >= count) {
-        return;
-    }
-    _bitrate = bitratePresets[idx];
-    [self updateBitrateLabel];
-}
+    return NO;
+#else
+    // "Touchscreen as trackpad" ON == relative == absoluteTouchMode NO
+    return _absoluteTouchToggle ? (_absoluteTouchToggle.selectedSegmentIndex == 0) : NO;
 #endif
+}
+
+- (BOOL)chosenBtMouse {
+#if TARGET_OS_TV
+    return NO;
+#else
+    return [self toggleOn:_btMouseToggle];
+#endif
+}
 
 - (int)sliderIndexForBitrate:(NSInteger)bitrate {
     int count = (int)(sizeof(bitrateTable) / sizeof(*bitrateTable));
@@ -398,7 +522,32 @@ static const int bitratePresets[] = {
     [self updateBitrateLabel];
 }
 
-#if !TARGET_OS_TV
+- (void)syncBitrateControlAnimated:(BOOL)animated {
+#if TARGET_OS_TV
+    int count = (int)(sizeof(bitratePresets) / sizeof(*bitratePresets));
+    int bestIndex = 0;
+    for (int i = 0; i < count; i++) {
+        if (_bitrate >= bitratePresets[i]) {
+            bestIndex = i;
+        }
+    }
+    _bitratePresets.selectedSegmentIndex = bestIndex;
+#else
+    [_bitrateSlider setValue:[self sliderIndexForBitrate:_bitrate] animated:animated];
+#endif
+}
+
+#if TARGET_OS_TV
+- (void)bitratePresetChanged {
+    NSInteger idx = _bitratePresets.selectedSegmentIndex;
+    int count = (int)(sizeof(bitratePresets) / sizeof(*bitratePresets));
+    if (idx < 0 || idx >= count) {
+        return;
+    }
+    _bitrate = bitratePresets[idx];
+    [self updateBitrateLabel];
+}
+#else
 - (void)bitrateSliderMoved {
     int idx = (int)_bitrateSlider.value;
     int count = (int)(sizeof(bitrateTable) / sizeof(*bitrateTable));
@@ -413,9 +562,12 @@ static const int bitratePresets[] = {
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
+    if (textField == _hostField) {
+        [_appNameField becomeFirstResponder];
+    } else {
+        [textField resignFirstResponder];
+    }
     return YES;
 }
 
 @end
-

@@ -12,6 +12,9 @@
 #import "StreamManager.h"
 #import "ControllerSupport.h"
 #import "DataManager.h"
+#import "HttpManager.h"
+#import "HttpRequest.h"
+#import "HttpResponse.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -34,6 +37,7 @@
     ControllerSupport *_controllerSupport;
     StreamManager *_streamMan;
     TemporarySettings *_settings;
+    BOOL _streamMenuVisible;
     NSTimer *_inactivityTimer;
     NSTimer *_statsUpdateTimer;
     UITapGestureRecognizer *_menuTapGestureRecognizer;
@@ -649,8 +653,134 @@
 
 - (void) streamExitRequested {
     Log(LOG_I, @"Gamepad combo requested stream exit");
-    
+
     [self returnToMainFrame];
+}
+
+#pragma mark - In-stream menu
+
+- (void) gamepadMenuDoublePressed {
+    [self showStreamMenu];
+}
+
+- (void) showStreamMenu {
+    // Avoid stacking multiple menus on repeated double-presses.
+    if (_streamMenuVisible) {
+        return;
+    }
+    _streamMenuVisible = YES;
+
+    // Block controller/touch input from reaching the stream while the menu is up.
+    [_controllerSupport setInputSuppressed:YES];
+
+    UIAlertController* menu = [UIAlertController alertControllerWithTitle:nil
+                                                                 message:nil
+                                                          preferredStyle:UIAlertControllerStyleAlert];
+
+    [menu addAction:[UIAlertAction actionWithTitle:@"Close Game"
+                                             style:UIAlertActionStyleDestructive
+                                           handler:^(UIAlertAction* action) {
+        self->_streamMenuVisible = NO;
+        // Close the running game on the host (Alt+F4) but keep streaming.
+        [self closeGameOnHost];
+        [self->_controllerSupport setInputSuppressed:NO];
+    }]];
+
+    [menu addAction:[UIAlertAction actionWithTitle:@"Exit Stream"
+                                             style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction* action) {
+        self->_streamMenuVisible = NO;
+        [self returnToMainFrame];
+    }]];
+
+    // Button Mapping is only available where the GameLink UI class exists
+    // (GameLink targets); this keeps the shared controller free of a hard
+    // dependency on GameLink-only code.
+    if (NSClassFromString(@"GLControllerListViewController") != nil) {
+        [menu addAction:[UIAlertAction actionWithTitle:@"Button Mapping"
+                                                 style:UIAlertActionStyleDefault
+                                               handler:^(UIAlertAction* action) {
+            self->_streamMenuVisible = NO;
+            [self openButtonMappingOverlay];
+        }]];
+    }
+
+    // Resume restores input. On tvOS the Menu/Back button on the remote also
+    // triggers this cancel action, dismissing the menu.
+    [menu addAction:[UIAlertAction actionWithTitle:@"Resume"
+                                             style:UIAlertActionStyleCancel
+                                           handler:^(UIAlertAction* action) {
+        self->_streamMenuVisible = NO;
+        [self->_controllerSupport setInputSuppressed:NO];
+    }]];
+
+    [self presentViewController:menu animated:YES completion:nil];
+}
+
+// Presents the GameLink controller mapping UI as an overlay sheet. Input stays
+// suppressed until the sheet is dismissed.
+- (void) openButtonMappingOverlay {
+    Class listClass = NSClassFromString(@"GLControllerListViewController");
+    if (listClass == nil) {
+        [_controllerSupport setInputSuppressed:NO];
+        return;
+    }
+
+    UIViewController* listVC = [[listClass alloc] init];
+    listVC.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                      target:self
+                                                      action:@selector(dismissButtonMappingOverlay)];
+
+    UINavigationController* nav = [[UINavigationController alloc] initWithRootViewController:listVC];
+#if !TARGET_OS_TV
+    nav.modalPresentationStyle = UIModalPresentationFormSheet;
+#endif
+    [self presentViewController:nav animated:YES completion:nil];
+}
+
+- (void) dismissButtonMappingOverlay {
+    [self dismissViewControllerAnimated:YES completion:^{
+        // The mapping screens hijack the controller's value-changed handler for
+        // navigation and clear it on dismiss, so re-establish our input handlers
+        // before resuming the stream.
+        [self->_controllerSupport refreshControllerCallbacks];
+        [self->_controllerSupport setInputSuppressed:NO];
+    }];
+}
+
+// Close the focused game window on the host by sending Alt+F4, while keeping the
+// stream (and this app) running. This targets the game on the PC, not Moonlight.
+- (void) closeGameOnHost {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        const short kVkLeftAlt = 0xA4; // VK_LMENU
+        const short kVkF4      = 0x73; // VK_F4
+
+        // Moonlight expects Win32 VK codes flagged with 0x8000.
+        LiSendKeyboardEvent(0x8000 | kVkLeftAlt, KEY_ACTION_DOWN, MODIFIER_ALT);
+        LiSendKeyboardEvent(0x8000 | kVkF4,      KEY_ACTION_DOWN, MODIFIER_ALT);
+        usleep(50 * 1000);
+        LiSendKeyboardEvent(0x8000 | kVkF4,      KEY_ACTION_UP,   MODIFIER_ALT);
+        LiSendKeyboardEvent(0x8000 | kVkLeftAlt, KEY_ACTION_UP,   0);
+    });
+}
+
+// Ask the host to quit the running app (Moonlight session quit).
+- (void) quitHostApp {
+    NSString* host = [self.streamConfig.host copy];
+    unsigned short httpsPort = self.streamConfig.httpsPort;
+    NSData* serverCert = [self.streamConfig.serverCert copy];
+
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        HttpManager* httpManager = [[HttpManager alloc] initWithAddress:host
+                                                              httpsPort:httpsPort
+                                                             serverCert:serverCert];
+        HttpResponse* response = [[HttpResponse alloc] init];
+        HttpRequest* request = [HttpRequest requestForResponse:response
+                                                withUrlRequest:[httpManager newQuitAppRequest]];
+        [httpManager executeRequestSynchronously:request];
+        Log(LOG_I, @"Quit host app response: %d", response.statusCode);
+    });
 }
 
 - (void)userInteractionBegan {
@@ -712,3 +842,4 @@
 #endif
 
 @end
+

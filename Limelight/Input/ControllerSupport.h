@@ -17,6 +17,10 @@
 - (void) mousePresenceChanged;
 - (void) streamExitRequested;
 
+@optional
+// Invoked when the user double-presses the configured menu-shortcut button.
+- (void) gamepadMenuDoublePressed;
+
 @end
 
 @interface ControllerSupport : NSObject
@@ -49,5 +53,11 @@
 +(int) getConnectedGamepadMask:(StreamConfiguration*)streamConfig;
 
 -(NSUInteger) getConnectedGamepadCount;
+
+-(void) setInputSuppressed:(BOOL)suppressed;
+
+// Re-register input handlers on connected controllers (e.g. after another screen
+// temporarily took over the controller's value-changed handler).
+-(void) refreshControllerCallbacks;
 
 @end

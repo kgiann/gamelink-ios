@@ -8,4 +8,7 @@
 
 @property (weak, nonatomic) id<GLSettingsDelegate> delegate;
 
+- (void)saveAndDismiss;
+- (void)cancel;
+
 @end

@@ -399,18 +399,17 @@ static const int bitratePresets[] = {
 #pragma mark - Save
 
 - (void)save {
-    NSString* host = [_hostField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    NSString* appName = [_appNameField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    // Settings are always saved on dismiss. If host/app are empty, the launch
+    // screen shows its "Not Configured" message rather than blocking here.
 
-    if (host.length == 0 || appName.length == 0) {
-        UIAlertController* alert = [UIAlertController
-            alertControllerWithTitle:@"Missing Information"
-            message:@"Please enter both a host address and an app name."
-            preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alert animated:YES completion:nil];
+    // The UI is built asynchronously; if it hasn't been built yet there's nothing
+    // to persist (avoid writing nil/defaults over existing values).
+    if (_hostField == nil) {
         return;
     }
+
+    NSString* host = [_hostField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] ?: @"";
+    NSString* appName = [_appNameField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] ?: @"";
 
     NSInteger audioConfig = [self chosenAudioConfig];
     NSInteger osc = [self chosenOnscreenControls];

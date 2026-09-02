@@ -1,5 +1,5 @@
 - [ ] Quit host app on stream end even on user swipe
-- [ ] Be able to cancel connecting stage
-- [ ] fix: Stream menu doesn't block next key event
+- [ ] fix: Stream menu doesn't block next key event on ios
 - [ ] Close Game not working correctly
+- [X] Be able to cancel connecting stage
 - [X] Settings save doesn't show on tvos

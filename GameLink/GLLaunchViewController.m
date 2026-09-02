@@ -67,6 +67,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     UILabel*                  _detailLabel;
     UIButton*                 _retryButton;
     UIButton*                 _settingsButton;
+    UIButton*                 _cancelButton;
 
     // Connection state
     TemporaryHost*            _selectedHost;
@@ -78,6 +79,12 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     UIAlertController*        _pairAlert;
     GLConnectionState         _state;
     GLStreamingState          _streamingState;
+
+    // Cancellation: each connection attempt bumps the generation. In-flight
+    // background work bails out if the generation changes underneath it.
+    BOOL                      _connecting;
+    NSInteger                 _connectGeneration;
+    NSInteger                 _pendingPairGen;
 }
 
 #pragma mark - View Lifecycle
@@ -179,6 +186,15 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     _settingsButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_overlayView addSubview:_settingsButton];
 
+    // Shown only while connecting; lets the user abort the connect stage.
+    _cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+    [_cancelButton addTarget:self action:@selector(cancelTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
+    _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _cancelButton.hidden = YES;
+    [_overlayView addSubview:_cancelButton];
+
     [NSLayoutConstraint activateConstraints:@[
         [_spinner.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
         [_spinner.centerYAnchor constraintEqualToAnchor:_overlayView.centerYAnchor constant:-50],
@@ -195,6 +211,10 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
         [_retryButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:24],
         [_retryButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
+
+        // Cancel occupies the same slot as Retry (only one is visible at a time).
+        [_cancelButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:24],
+        [_cancelButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
     ]];
 
 #if TARGET_OS_TV
@@ -231,6 +251,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
         self->_retryButton.hidden = !(isError || isStreamEnded);
         self->_settingsButton.hidden = isConnecting;
+        self->_cancelButton.hidden = !isConnecting;
     });
 }
 
@@ -241,14 +262,20 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 #pragma mark - Connection Entry Point
 
 - (void)startConnection {
+    // Invalidate any in-flight attempt and start a fresh generation.
+    _connectGeneration++;
+    NSInteger gen = _connectGeneration;
+
     NSString* hostAddress = [[NSUserDefaults standardUserDefaults] stringForKey:kGLHostAddress];
     NSString* appName = [[NSUserDefaults standardUserDefaults] stringForKey:kGLAppName];
 
     if (hostAddress.length == 0 || appName.length == 0) {
+        _connecting = NO;
         [self updateUI:GLStateUnconfigured status:@"Not Configured" detail:@"Tap Settings to set your host and app."];
         return;
     }
 
+    _connecting = YES;
     [self updateUI:GLStateConnecting status:@"Connecting…" detail:hostAddress];
 
     // Find an existing saved host so we can reuse its certificate/MAC, or create a fresh one
@@ -273,40 +300,48 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     host.activeAddress = hostAddress;
     _selectedHost = host;
 
-    [self performConnectionSequence:host];
+    [self performConnectionSequence:host generation:gen];
 }
 
-- (void)performConnectionSequence:(TemporaryHost*)host {
+- (void)performConnectionSequence:(TemporaryHost*)host generation:(NSInteger)gen {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (gen != self->_connectGeneration) return; // cancelled
+
         dispatch_async(dispatch_get_main_queue(), ^{
-            self->_statusLabel.text = @"Getting server info…";
+            if (gen == self->_connectGeneration) {
+                self->_statusLabel.text = @"Getting server info…";
+            }
         });
-        
+
         BOOL didSendWOL = false;
-        BOOL hostDiscovered = false;
         NSString* error = @"";
         DiscoveryWorker* worker = [[DiscoveryWorker alloc] initWithHost:host uniqueId:@"main"];
-        
+
         if (host.mac != nil && ![host.mac isEqualToString:@"00:00:00:00:00:00"]) {
             [WakeOnLanManager wakeHost:host];
             didSendWOL = true;
         }
-        
-        for (int i = 0, count = didSendWOL ? 30 : 1;
-             i < count && ![worker discoverHostWithError:&error]; i++) {
+
+        for (int i = 0, count = didSendWOL ? 30 : 1; i < count; i++) {
+            if (gen != self->_connectGeneration) return; // cancelled
+            if ([worker discoverHostWithError:&error]) break;
             sleep(1);
         }
-        
+
+        if (gen != self->_connectGeneration) return; // cancelled
+
         if (host.state != StateOnline) {
-            [self showError:@"Connection Failed" detail:error];
+            [self showError:@"Connection Failed" detail:error generation:gen];
             return;
         }
 
         if (host.pairState == PairStatePaired) {
-            [self fetchAppListAndLaunch:host];
+            [self fetchAppListAndLaunch:host generation:gen];
         } else {
             HttpManager* hMan = [[HttpManager alloc] initWithHost:host];
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (gen != self->_connectGeneration) return; // cancelled before pairing
+                self->_pendingPairGen = gen;
                 PairManager* pMan = [[PairManager alloc] initWithManager:hMan clientCert:self->_clientCert callback:self];
                 [self->_opQueue addOperation:pMan];
             });
@@ -314,16 +349,24 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     });
 }
 
-- (void)fetchAppListAndLaunch:(TemporaryHost*)host {
+- (void)fetchAppListAndLaunch:(TemporaryHost*)host generation:(NSInteger)gen {
+    if (gen != _connectGeneration) return; // cancelled
+
     dispatch_async(dispatch_get_main_queue(), ^{
-        self->_statusLabel.text = @"Loading apps…";
+        if (gen == self->_connectGeneration) {
+            self->_statusLabel.text = @"Loading apps…";
+        }
     });
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (gen != self->_connectGeneration) return; // cancelled
+
         AppListResponse* appListResp = [ConnectionHelper getAppListForHost:host];
 
+        if (gen != self->_connectGeneration) return; // cancelled during fetch
+
         if (![appListResp isStatusOk] || [appListResp getAppList] == nil) {
-            [self showError:@"App List Failed" detail:appListResp.statusMessage];
+            [self showError:@"App List Failed" detail:appListResp.statusMessage generation:gen];
             return;
         }
 
@@ -343,7 +386,8 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
         if (targetApp == nil) {
             [self showError:@"App Not Found"
-                     detail:[NSString stringWithFormat:@"Could not find \"%@\" on the host. Check the app name in Settings.", targetName]];
+                     detail:[NSString stringWithFormat:@"Could not find \"%@\" on the host. Check the app name in Settings.", targetName]
+                 generation:gen];
             return;
         }
 
@@ -353,6 +397,8 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
         [self prepareStreamConfigForApp:appToStream];
 
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (gen != self->_connectGeneration) return; // cancelled just before launch
+            self->_connecting = NO;
             self->_streamingState = GLStreamingStateActive;
             [self performSegueWithIdentifier:@"createStreamFrame" sender:nil];
         });
@@ -469,6 +515,15 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 // This fires when the home button is pressed. If we're actively streaming,
 // tell the host to quit the running app so it doesn't stay occupied.
 - (void)applicationDidEnterBackground:(NSNotification *)notification {
+    // If we're mid-connect (not yet streaming), cancel it and reconnect when we
+    // come back to the foreground.
+    if (_connecting) {
+        Log(LOG_I, @"GameLink backgrounded while connecting -- cancelling");
+        [self cancelInFlightConnection];
+        _streamingState = GLStreamingStateSuspended; // applicationDidBecomeActive re-connects
+        return;
+    }
+
     if (_streamingState != GLStreamingStateActive || _streamConfig == nil) {
         return;
     }
@@ -529,10 +584,34 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
 #pragma mark - Error Helpers
 
-- (void)showError:(NSString*)title detail:(NSString*)detail {
+- (void)showError:(NSString*)title detail:(NSString*)detail generation:(NSInteger)gen {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (gen != self->_connectGeneration) return; // superseded/cancelled
+        self->_connecting = NO;
         [self updateUI:GLStateError status:title detail:detail];
     });
+}
+
+#pragma mark - Cancellation
+
+// Stop any in-flight connection work. Bumping the generation makes the
+// background stages bail; also cancel pairing and dismiss the pairing alert.
+- (void)cancelInFlightConnection {
+    _connectGeneration++;
+    _connecting = NO;
+    [_opQueue cancelAllOperations];
+    if (_pairAlert) {
+        [_pairAlert dismissViewControllerAnimated:NO completion:nil];
+        _pairAlert = nil;
+    }
+}
+
+- (void)cancelTapped {
+    if (!_connecting) {
+        return;
+    }
+    [self cancelInFlightConnection];
+    [self updateUI:GLStateError status:@"Connection Cancelled" detail:@"Tap Retry to try again."];
 }
 
 #pragma mark - Button Actions
@@ -559,6 +638,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
 - (void)startPairing:(NSString*)PIN {
     dispatch_sync(dispatch_get_main_queue(), ^{
+        if (_pendingPairGen != _connectGeneration) return; // cancelled
         _pairAlert = [UIAlertController
             alertControllerWithTitle:@"Pairing"
             message:[NSString stringWithFormat:
@@ -573,50 +653,58 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 }
 
 - (void)pairSuccessful:(NSData*)serverCert {
+    NSInteger gen = _pendingPairGen;
+    if (gen != _connectGeneration) return; // cancelled
+
     // Persist the server cert immediately (on background thread, before main queue dispatch).
     self->_selectedHost.serverCert = serverCert;
     DataManager* dataMan = [[DataManager alloc] init];
     [dataMan updateHost:self->_selectedHost];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (gen != self->_connectGeneration) return; // cancelled
         UIAlertController* alert = self->_pairAlert;
         self->_pairAlert = nil;
         // Wait for the alert dismiss animation to finish before pushing the stream view,
         // otherwise performSegueWithIdentifier: fails while a VC is still being presented.
         if (alert) {
             [alert dismissViewControllerAnimated:YES completion:^{
-                [self fetchAppListAndLaunch:self->_selectedHost];
+                [self fetchAppListAndLaunch:self->_selectedHost generation:gen];
             }];
         } else {
-            [self fetchAppListAndLaunch:self->_selectedHost];
+            [self fetchAppListAndLaunch:self->_selectedHost generation:gen];
         }
     });
 }
 
 - (void)pairFailed:(NSString*)message {
+    NSInteger gen = _pendingPairGen;
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (gen != self->_connectGeneration) return; // cancelled
         UIAlertController* alert = self->_pairAlert;
         self->_pairAlert = nil;
         if (alert) {
             [alert dismissViewControllerAnimated:YES completion:^{
-                [self showError:@"Pairing Failed" detail:message];
+                [self showError:@"Pairing Failed" detail:message generation:gen];
             }];
         } else {
-            [self showError:@"Pairing Failed" detail:message];
+            [self showError:@"Pairing Failed" detail:message generation:gen];
         }
     });
 }
 
 - (void)alreadyPaired {
+    NSInteger gen = _pendingPairGen;
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (gen != self->_connectGeneration) return; // cancelled
         UIAlertController* alert = self->_pairAlert;
         self->_pairAlert = nil;
         if (alert) {
             [alert dismissViewControllerAnimated:YES completion:^{
-                [self fetchAppListAndLaunch:self->_selectedHost];
+                [self fetchAppListAndLaunch:self->_selectedHost generation:gen];
             }];
         } else {
-            [self fetchAppListAndLaunch:self->_selectedHost];
+            [self fetchAppListAndLaunch:self->_selectedHost generation:gen];
         }
     });
 }

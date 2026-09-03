@@ -5,14 +5,11 @@
 
 #import "GLConnectionSettingsViewController.h"
 #import "GLControllerListViewController.h"
-#import "GLSettingsViewController.h"
 #import "DataManager.h"
 #import "TemporarySettings.h"
 
 #import <VideoToolbox/VideoToolbox.h>
 #import <AVFoundation/AVFoundation.h>
-
-#include "Limelight.h"
 
 NSString* const kGLHostAddress = @"GLHostAddress";
 NSString* const kGLAppName = @"GLAppName";
@@ -35,16 +32,6 @@ NSString* const kGLEnableHdr = @"GLEnableHdr";
 NSString* const kGLBtMouse = @"GLBtMouse";
 NSString* const kGLAbsoluteTouch = @"GLAbsoluteTouch";
 NSString* const kGLStatsOverlay = @"GLStatsOverlay";
-// Flag whose double-press opens the in-stream menu (read by ControllerSupport).
-NSString* const kGLMenuButton = @"GLMenuButton";
-
-// Buttons offered as the in-stream menu shortcut.
-static const int menuButtonFlags[] = {
-    PLAY_FLAG, BACK_FLAG, LS_CLK_FLAG, RS_CLK_FLAG, MISC_FLAG, SPECIAL_FLAG,
-};
-static NSString* const menuButtonTitles[] = {
-    @"Start", @"Select", @"L3", @"R3", @"Guide", @"Share",
-};
 
 static NSString* bitrateFormat = @"Bitrate: %.1f Mbps";
 static const int bitrateTable[] = {
@@ -79,7 +66,6 @@ static const int bitratePresets[] = {
     // Additional DataManager settings
     UISegmentedControl* _audioSelector;
     UISegmentedControl* _codecSelector;
-    UISegmentedControl* _menuButtonSelector;
     UISegmentedControl* _hdrToggle;
     UISegmentedControl* _framePacingToggle;
     UISegmentedControl* _optimizeToggle;
@@ -98,13 +84,6 @@ static const int bitratePresets[] = {
 
     // Layout metrics (set in buildUI)
     CGFloat _margin, _contentWidth, _fieldHeight, _labelHeight, _segHeight, _spacing, _y;
-}
-
-+ (void)load {
-    // Give GameLink a sensible default menu-shortcut button (double-press Start)
-    // so the in-stream menu works before the user visits settings. This only
-    // affects the GameLink targets (this class doesn't exist in Moonlight).
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{ kGLMenuButton: @(PLAY_FLAG) }];
 }
 
 - (void)viewDidLoad {
@@ -173,6 +152,7 @@ static const int bitratePresets[] = {
     _hostField.keyboardType = UIKeyboardTypeURL;
     _hostField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _hostField.autocorrectionType = UITextAutocorrectionTypeNo;
+    _hostField.returnKeyType = UIReturnKeyNext;
     _hostField.tag = 1;
     [_scrollView addSubview:_hostField];
     _y = CGRectGetMaxY(_hostField.frame) + _spacing;
@@ -235,13 +215,6 @@ static const int bitratePresets[] = {
     // --- Codec ---
     _codecSelector = [self appendRow:@"VIDEO CODEC" items:@[@"Auto", @"H.264", @"HEVC", @"AV1"]];
 
-    // --- In-stream menu shortcut (double-press) ---
-    NSMutableArray* menuItems = [NSMutableArray array];
-    for (int i = 0; i < (int)(sizeof(menuButtonFlags) / sizeof(*menuButtonFlags)); i++) {
-        [menuItems addObject:menuButtonTitles[i]];
-    }
-    _menuButtonSelector = [self appendRow:@"MENU SHORTCUT (DOUBLE-PRESS)" items:menuItems];
-
     // --- Toggles (common) ---
     _hdrToggle = [self appendToggleRow:@"HDR"];
     _framePacingToggle = [self appendToggleRow:@"FRAME PACING"];
@@ -288,7 +261,6 @@ static const int bitratePresets[] = {
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
-
 
 - (UILabel*)makeSectionLabel:(NSString*)text {
     UILabel* label = [[UILabel alloc] init];
@@ -360,14 +332,6 @@ static const int bitratePresets[] = {
     NSInteger codec = [d objectForKey:kGLPreferredCodec] ? [d integerForKey:kGLPreferredCodec] : settings.preferredCodec;
     if (codec < 0 || codec > 3) codec = 0;
     _codecSelector.selectedSegmentIndex = codec;
-
-    // Menu shortcut button
-    int menuFlag = (int)[d integerForKey:kGLMenuButton];
-    NSInteger menuIndex = 0;
-    for (int i = 0; i < (int)(sizeof(menuButtonFlags) / sizeof(*menuButtonFlags)); i++) {
-        if (menuButtonFlags[i] == menuFlag) { menuIndex = i; break; }
-    }
-    _menuButtonSelector.selectedSegmentIndex = menuIndex;
 
     // Common toggles
     _hdrToggle.selectedSegmentIndex             = [self boolPref:kGLEnableHdr fallback:settings.enableHdr] ? 1 : 0;
@@ -443,12 +407,6 @@ static const int bitratePresets[] = {
     [defaults setBool:btMouse forKey:kGLBtMouse];
     [defaults setBool:absoluteTouch forKey:kGLAbsoluteTouch];
     [defaults setBool:stats forKey:kGLStatsOverlay];
-
-    NSInteger menuIdx = _menuButtonSelector.selectedSegmentIndex;
-    if (menuIdx < 0 || menuIdx >= (NSInteger)(sizeof(menuButtonFlags) / sizeof(*menuButtonFlags))) {
-        menuIdx = 0;
-    }
-    [defaults setInteger:menuButtonFlags[menuIdx] forKey:kGLMenuButton];
     [defaults synchronize];
 
     DataManager* dataMan = [[DataManager alloc] init];
@@ -600,6 +558,15 @@ static const int bitratePresets[] = {
 
 - (void)updateBitrateLabel {
     _bitrateLabel.text = [NSString stringWithFormat:bitrateFormat, _bitrate / 1000.0];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField == _hostField) {
+        [_appNameField becomeFirstResponder];
+    } else {
+        [textField resignFirstResponder];
+    }
+    return YES;
 }
 
 @end

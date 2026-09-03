@@ -47,14 +47,6 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     char _controllerNumbers;
     bool _multiController;
     bool _swapABXYButtons;
-
-    // Menu-shortcut double-press detection (0 == disabled)
-    int _menuShortcutFlag;
-    CFTimeInterval _lastMenuShortcutTime;
-    BOOL _menuShortcutDown;
-
-    // When YES, incoming controller input is dropped (e.g. while a menu is shown)
-    BOOL _inputSuppressed;
 }
 
 // UPDATE_BUTTON_FLAG(controller, flag, pressed)
@@ -345,80 +337,10 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
     return (_multiController ? _controllerNumbers : 1) | (_oscEnabled ? 1 : 0);
 }
 
--(void) setInputSuppressed:(BOOL)suppressed
-{
-    [_controllerStreamLock lock];
-    _inputSuppressed = suppressed;
-
-    if (suppressed) {
-        // Release everything so the host doesn't see stuck inputs while a menu is up.
-        for (NSNumber* key in _controllers) {
-            Controller* controller = _controllers[key];
-            @synchronized(controller) {
-                controller.lastButtonFlags = 0;
-                controller.lastLeftTrigger = 0;
-                controller.lastRightTrigger = 0;
-                controller.lastLeftStickX = 0;
-                controller.lastLeftStickY = 0;
-                controller.lastRightStickX = 0;
-                controller.lastRightStickY = 0;
-
-                LiSendMultiControllerEvent(_multiController ? controller.playerIndex : 0,
-                                           [self getActiveGamepadMask],
-                                           0, 0, 0, 0, 0, 0, 0);
-            }
-        }
-    }
-
-    [_controllerStreamLock unlock];
-}
-
--(void) refreshControllerCallbacks
-{
-    for (GCController* controller in [GCController controllers]) {
-        if ([ControllerSupport isSupportedGamepad:controller]) {
-            [self registerControllerCallbacks:controller];
-
-            // Reload the (possibly just-edited) button remapping so changes apply
-            // live without needing to reconnect the stream.
-            Controller* lime = [_controllers objectForKey:[NSNumber numberWithInteger:controller.playerIndex]];
-            if (lime != nil) {
-                lime.buttonRemap = [ControllerButtonRemap mappingForControllerKey:
-                                    [ControllerButtonRemap keyForGamepad:controller]];
-            }
-        }
-    }
-}
-
-// Detects a double-press of the configured menu-shortcut button. Returns YES on
-// the second press within the double-press window. Call while holding the lock.
--(BOOL) checkMenuShortcut:(int)flags
-{
-    if (_menuShortcutFlag == 0) {
-        return NO;
-    }
-
-    BOOL down = (flags & _menuShortcutFlag) == _menuShortcutFlag;
-    BOOL triggered = NO;
-    if (down && !_menuShortcutDown) {
-        CFTimeInterval now = CACurrentMediaTime();
-        if (_lastMenuShortcutTime > 0 && (now - _lastMenuShortcutTime) <= 0.4) {
-            triggered = YES;
-            _lastMenuShortcutTime = 0;
-        }
-        else {
-            _lastMenuShortcutTime = now;
-        }
-    }
-    _menuShortcutDown = down;
-    return triggered;
-}
-
 -(void) updateFinished:(Controller*)controller
 {
     BOOL exitRequested = NO;
-    BOOL menuRequested = NO;
-
+    
     [_controllerStreamLock lock];
     @synchronized(controller) {
         // Handle Start+Select+L1+R1 gamepad quit combo
@@ -426,14 +348,7 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
             controller.lastButtonFlags = 0;
             exitRequested = YES;
         }
-
-        // Detect the menu-shortcut double-press on the combined button state
-        int menuFlags = controller.lastButtonFlags;
-        if (controller.mergedWithController) {
-            menuFlags |= controller.mergedWithController.lastButtonFlags;
-        }
-        menuRequested = [self checkMenuShortcut:menuFlags];
-
+        
         // Only send controller events if we successfully reported controller arrival
         if ([self reportControllerArrival:controller]) {
             uint32_t buttonFlags = controller.lastButtonFlags;
@@ -443,7 +358,7 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
             int16_t leftStickY = controller.lastLeftStickY;
             int16_t rightStickX = controller.lastRightStickX;
             int16_t rightStickY = controller.lastRightStickY;
-
+            
             // If this is merged with another controller, combine the inputs
             if (controller.mergedWithController) {
                 buttonFlags |= controller.mergedWithController.lastButtonFlags;
@@ -454,7 +369,7 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
                 rightStickX = MAX_MAGNITUDE(rightStickX, controller.mergedWithController.lastRightStickX);
                 rightStickY = MAX_MAGNITUDE(rightStickY, controller.mergedWithController.lastRightStickY);
             }
-
+            
             // Player 1 is always present for OSC
             LiSendMultiControllerEvent(_multiController ? controller.playerIndex : 0, [self getActiveGamepadMask],
                                        buttonFlags, leftTrigger, rightTrigger,
@@ -467,13 +382,6 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
         // Invoke the delegate callback on the main thread
         dispatch_async(dispatch_get_main_queue(), ^{
             [self->_delegate streamExitRequested];
-        });
-    }
-    else if (menuRequested) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self->_delegate respondsToSelector:@selector(gamepadMenuDoublePressed)]) {
-                [self->_delegate gamepadMenuDoublePressed];
-            }
         });
     }
 }
@@ -832,9 +740,6 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
             }
             
             controller.extendedGamepad.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element) {
-                if (self->_inputSuppressed) {
-                    return;
-                }
                 Controller* limeController = [self->_controllers objectForKey:[NSNumber numberWithInteger:gamepad.controller.playerIndex]];
                 short leftStickX, leftStickY;
                 short rightStickX, rightStickY;
@@ -957,9 +862,6 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
             }
             int sourceFlag = simpleButtons[inputName].intValue;
             button.pressedChangedHandler = ^(GCControllerButtonInput* b, float value, BOOL pressed) {
-                if (self->_inputSuppressed) {
-                    return;
-                }
                 Controller* lime = [self->_controllers objectForKey:@(playerIndex)];
                 if (lime == nil) {
                     return;
@@ -979,9 +881,6 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
                 }
                 else {
                     shareButton.pressedChangedHandler = ^(GCControllerButtonInput* b, float value, BOOL pressed) {
-                        if (self->_inputSuppressed) {
-                            return;
-                        }
                         Controller* lime = [self->_controllers objectForKey:@(playerIndex)];
                         if (lime == nil) {
                             return;
@@ -1252,9 +1151,6 @@ UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller
     _controllers = [[NSMutableDictionary alloc] init];
     _controllerNumbers = 0;
     _multiController = streamConfig.multiController;
-    // GameLink sets this NSUserDefaults key to the flag whose double-press opens
-    // the in-stream menu. It is unset (0 = disabled) for the Moonlight targets.
-    _menuShortcutFlag = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"GLMenuButton"];
     _swapABXYButtons = streamConfig.swapABXYButtons;
     _delegate = delegate;
 

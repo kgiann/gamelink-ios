@@ -132,6 +132,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     // Returning from stream or settings is handled by viewWillAppear/settingsDidSave.
     if (_streamingState == GLStreamingStateActive) {
         _streamingState = GLStreamingStateInactive;
+        [self quitHostAppAndWait:FALSE];
         [self showStreamEndedState];
     }
 }

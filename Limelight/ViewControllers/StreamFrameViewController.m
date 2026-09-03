@@ -677,11 +677,19 @@
                                                                  message:nil
                                                           preferredStyle:UIAlertControllerStyleAlert];
 
+    [menu addAction:[UIAlertAction actionWithTitle:@"Close Game"
+                                             style:UIAlertActionStyleDestructive
+                                           handler:^(UIAlertAction* action) {
+        self->_streamMenuVisible = NO;
+        // Close the running game on the host (Alt+F4) but keep streaming.
+        [self closeGameOnHost];
+        [self->_controllerSupport setInputSuppressed:NO];
+    }]];
+
     [menu addAction:[UIAlertAction actionWithTitle:@"Exit Stream"
                                              style:UIAlertActionStyleDefault
                                            handler:^(UIAlertAction* action) {
         self->_streamMenuVisible = NO;
-        [self quitHostApp];
         [self returnToMainFrame];
     }]];
 
@@ -739,6 +747,22 @@
         [self->_controllerSupport refreshControllerCallbacks];
         [self->_controllerSupport setInputSuppressed:NO];
     }];
+}
+
+// Close the focused game window on the host by sending Alt+F4, while keeping the
+// stream (and this app) running. This targets the game on the PC, not Moonlight.
+- (void) closeGameOnHost {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        const short kVkLeftAlt = 0xA4; // VK_LMENU
+        const short kVkF4      = 0x73; // VK_F4
+
+        // Moonlight expects Win32 VK codes flagged with 0x8000.
+        LiSendKeyboardEvent(0x8000 | kVkLeftAlt, KEY_ACTION_DOWN, MODIFIER_ALT);
+        LiSendKeyboardEvent(0x8000 | kVkF4,      KEY_ACTION_DOWN, MODIFIER_ALT);
+        usleep(50 * 1000);
+        LiSendKeyboardEvent(0x8000 | kVkF4,      KEY_ACTION_UP,   MODIFIER_ALT);
+        LiSendKeyboardEvent(0x8000 | kVkLeftAlt, KEY_ACTION_UP,   0);
+    });
 }
 
 // Ask the host to quit the running app (Moonlight session quit).

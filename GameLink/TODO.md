@@ -1,7 +1,5 @@
 - [ ] Quit host app on stream end even on user swipe
 - [ ] fix: Stream menu doesn't block next key event on ios
-- [ ] Setup remote connection
-- [ ] Dismiss menu is stream exits
-- [X] Close Game not working correctly
+- [ ] Close Game not working correctly
 - [X] Be able to cancel connecting stage
 - [X] Settings save doesn't show on tvos

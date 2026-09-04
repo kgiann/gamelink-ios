@@ -562,7 +562,12 @@ static const int bitratePresets[] = {
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField == _hostField) {
-        [_appNameField becomeFirstResponder];
+        // Defer to the next runloop. On tvOS the host field's keyboard is still
+        // dismissing when this fires; advancing the first responder synchronously
+        // leaves the app field focused but never opens its keyboard.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self->_appNameField becomeFirstResponder];
+        });
     } else {
         [textField resignFirstResponder];
     }

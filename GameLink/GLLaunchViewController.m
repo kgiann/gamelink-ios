@@ -65,9 +65,13 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     UIActivityIndicatorView*  _spinner;
     UILabel*                  _statusLabel;
     UILabel*                  _detailLabel;
-    UIButton*                 _retryButton;
-    UIButton*                 _settingsButton;
+    UIButton*                 _connectButton;
     UIButton*                 _cancelButton;
+#if TARGET_OS_TV
+    // Bridges focus from the top-right gear (nav bar) down to the centered action
+    // button, which a straight-down swipe wouldn't otherwise reach.
+    UIFocusGuide*             _actionFocusGuide;
+#endif
 
     // Connection state
     TemporaryHost*            _selectedHost;
@@ -100,7 +104,34 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     _opQueue = [[NSOperationQueue alloc] init];
 
     [self buildOverlayUI];
-    [self.navigationController setNavigationBarHidden:YES animated:NO];
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+
+    // Configure a fully transparent navigation bar so only the button is visible.
+    // tvOS doesn't support UINavigationBarAppearance (it throws at runtime), so it
+    // must use the legacy background/shadow-image customization instead.
+#if TARGET_OS_TV
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.backgroundColor = [UIColor clearColor];
+#else
+    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] init];
+    [appearance configureWithTransparentBackground];
+    appearance.backgroundColor = [UIColor clearColor];
+    appearance.backgroundEffect = nil;
+    appearance.shadowColor = [UIColor clearColor];
+    self.navigationController.navigationBar.standardAppearance = appearance;
+    self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
+#endif
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+
+    // Add a gear button as the right bar button item. Sizing the glyph from a
+    // system text style lets it inherit each platform's font metrics (larger on tvOS).
+    UIImage *gear = [[UIImage systemImageNamed:@"gearshape"]
+        imageByApplyingSymbolConfiguration:[UIImageSymbolConfiguration configurationWithTextStyle:UIFontTextStyleTitle2]];
+    UIBarButtonItem *settingsItem = [[UIBarButtonItem alloc] initWithImage:gear style:UIBarButtonItemStylePlain target:self action:@selector(settingsTapped)];
+    settingsItem.accessibilityLabel = @"Settings";
+    self.navigationItem.rightBarButtonItem = settingsItem;
 
     // Connect to host when GameLink becomes active.
     [[NSNotificationCenter defaultCenter] addObserver: self
@@ -125,9 +156,9 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    Log(LOG_I, @"viewWillAppear -- ");
+    Log(LOG_I, @"viewWillAppear");
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
 
     // Returning from stream or settings is handled by viewWillAppear/settingsDidSave.
     if (_streamingState == GLStreamingStateActive) {
@@ -139,6 +170,8 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    // Ensure focus lands on the visible action button after the view appears.
+    [self refreshPreferredFocus];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -159,76 +192,97 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
     _statusLabel = [[UILabel alloc] init];
     _statusLabel.textColor = [UIColor whiteColor];
-    _statusLabel.font = [UIFont systemFontOfSize:28 weight:UIFontWeightMedium];
+    {
+        UIFont *base = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
+        UIFontDescriptor *desc = [base.fontDescriptor fontDescriptorByAddingAttributes:@{UIFontDescriptorTraitsAttribute: @{UIFontWeightTrait: @(UIFontWeightMedium)}}];
+        _statusLabel.font = [UIFont fontWithDescriptor:desc size:0.0];
+    }
     _statusLabel.textAlignment = NSTextAlignmentCenter;
     _statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [_overlayView addSubview:_statusLabel];
 
     _detailLabel = [[UILabel alloc] init];
     _detailLabel.textColor = [UIColor colorWithWhite:0.7 alpha:1.0];
-    _detailLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
+    _detailLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _detailLabel.textAlignment = NSTextAlignmentCenter;
     _detailLabel.numberOfLines = 3;
     _detailLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [_overlayView addSubview:_detailLabel];
 
-    _retryButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [_retryButton setTitle:@"Retry" forState:UIControlStateNormal];
-    _retryButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
-    [_retryButton addTarget:self action:@selector(retryTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
-    _retryButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _retryButton.hidden = YES;
-    [_overlayView addSubview:_retryButton];
-
-    _settingsButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [_settingsButton setTitle:@"Settings" forState:UIControlStateNormal];
-    _settingsButton.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
-    [_settingsButton addTarget:self action:@selector(settingsTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
-    _settingsButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [_overlayView addSubview:_settingsButton];
+    _connectButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_connectButton setTitle:@"Connect" forState:UIControlStateNormal];
+    {
+        UIFont *base = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+        UIFontDescriptor *desc = [base.fontDescriptor fontDescriptorByAddingAttributes:@{UIFontDescriptorTraitsAttribute: @{UIFontWeightTrait: @(UIFontWeightSemibold)}}];
+        _connectButton.titleLabel.font = [UIFont fontWithDescriptor:desc size:0.0];
+    }
+    [_connectButton addTarget:self action:@selector(connectTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
+    _connectButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _connectButton.hidden = YES;
+    [_overlayView addSubview:_connectButton];
 
     // Shown only while connecting; lets the user abort the connect stage.
     _cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
-    _cancelButton.titleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+    {
+        UIFont *base = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+        UIFontDescriptor *desc = [base.fontDescriptor fontDescriptorByAddingAttributes:@{UIFontDescriptorTraitsAttribute: @{UIFontWeightTrait: @(UIFontWeightSemibold)}}];
+        _cancelButton.titleLabel.font = [UIFont fontWithDescriptor:desc size:0.0];
+    }
     [_cancelButton addTarget:self action:@selector(cancelTapped) forControlEvents:UIControlEventPrimaryActionTriggered];
     _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
     _cancelButton.hidden = YES;
     [_overlayView addSubview:_cancelButton];
 
+    // Spacing scales with the body font's line height, which is far larger on
+    // tvOS than iOS — so the layout breathes on TV without any per-idiom constants.
+    // (On iOS the unit is ~20pt, matching the values these replace.)
+    CGFloat unit = _detailLabel.font.lineHeight;
+    CGFloat spinnerOffset = unit * 2.5; // vertical centering bias for the whole stack
+    CGFloat statusTopGap  = unit;
+    CGFloat detailTopGap  = unit * 0.4;
+    CGFloat buttonTopGap  = unit * 1.2;
+    CGFloat sideMargin    = unit;
+
     [NSLayoutConstraint activateConstraints:@[
         [_spinner.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
-        [_spinner.centerYAnchor constraintEqualToAnchor:_overlayView.centerYAnchor constant:-50],
+        [_spinner.centerYAnchor constraintEqualToAnchor:_overlayView.centerYAnchor constant:-spinnerOffset],
 
-        [_statusLabel.topAnchor constraintEqualToAnchor:_spinner.bottomAnchor constant:20],
+        [_statusLabel.topAnchor constraintEqualToAnchor:_spinner.bottomAnchor constant:statusTopGap],
         [_statusLabel.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
-        [_statusLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:_overlayView.leadingAnchor constant:20],
-        [_statusLabel.trailingAnchor constraintLessThanOrEqualToAnchor:_overlayView.trailingAnchor constant:-20],
+        [_statusLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:_overlayView.leadingAnchor constant:sideMargin],
+        [_statusLabel.trailingAnchor constraintLessThanOrEqualToAnchor:_overlayView.trailingAnchor constant:-sideMargin],
 
-        [_detailLabel.topAnchor constraintEqualToAnchor:_statusLabel.bottomAnchor constant:8],
+        [_detailLabel.topAnchor constraintEqualToAnchor:_statusLabel.bottomAnchor constant:detailTopGap],
         [_detailLabel.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
-        [_detailLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:_overlayView.leadingAnchor constant:20],
-        [_detailLabel.trailingAnchor constraintLessThanOrEqualToAnchor:_overlayView.trailingAnchor constant:-20],
+        [_detailLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:_overlayView.leadingAnchor constant:sideMargin],
+        [_detailLabel.trailingAnchor constraintLessThanOrEqualToAnchor:_overlayView.trailingAnchor constant:-sideMargin],
 
-        [_retryButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:24],
-        [_retryButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
+        [_connectButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:buttonTopGap],
+        [_connectButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
 
         // Cancel occupies the same slot as Retry (only one is visible at a time).
-        [_cancelButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:24],
+        [_cancelButton.topAnchor constraintEqualToAnchor:_detailLabel.bottomAnchor constant:buttonTopGap],
         [_cancelButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
     ]];
 
 #if TARGET_OS_TV
-    // On tvOS the focus engine navigates by geometry, so stack Settings directly
-    // below Retry (centered) to make focus movable between the two buttons.
+    // Bridge focus from the top-right gear down to the centered action button.
+    // Critically, the guide's frame must NOT overlap the gear: a focus guide is
+    // disabled by the system while its frame overlaps the currently focused view,
+    // so anchoring the top to the safe area (below the nav bar) is what lets a
+    // downward move from the gear actually land in the guide.
+    // It also occupies only the column to the *right* of the button, so an upward
+    // move from the centered button travels the center column, never touches the
+    // guide, and reaches the gear natively. Target/enabled synced in updateUI:.
+    _actionFocusGuide = [[UIFocusGuide alloc] init];
+    _actionFocusGuide.enabled = NO;
+    [self.view addLayoutGuide:_actionFocusGuide];
     [NSLayoutConstraint activateConstraints:@[
-        [_settingsButton.topAnchor constraintEqualToAnchor:_retryButton.bottomAnchor constant:20],
-        [_settingsButton.centerXAnchor constraintEqualToAnchor:_overlayView.centerXAnchor],
-    ]];
-#else
-    [NSLayoutConstraint activateConstraints:@[
-        [_settingsButton.bottomAnchor constraintEqualToAnchor:_overlayView.safeAreaLayoutGuide.bottomAnchor constant:-20],
-        [_settingsButton.trailingAnchor constraintEqualToAnchor:_overlayView.safeAreaLayoutGuide.trailingAnchor constant:-20],
+        [_actionFocusGuide.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        [_actionFocusGuide.leadingAnchor constraintEqualToAnchor:_connectButton.trailingAnchor],
+        [_actionFocusGuide.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        [_actionFocusGuide.bottomAnchor constraintEqualToAnchor:_connectButton.topAnchor],
     ]];
 #endif
 }
@@ -250,14 +304,41 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
             [self->_spinner stopAnimating];
         }
 
-        self->_retryButton.hidden = !(isError || isStreamEnded);
-        self->_settingsButton.hidden = isConnecting;
         self->_cancelButton.hidden = !isConnecting;
+        self->_connectButton.hidden = !(isError || isStreamEnded);
+
+#if TARGET_OS_TV
+        // Redirect a downward move from the gear to whichever action button is showing.
+        UIButton* actionButton = !self->_connectButton.hidden ? self->_connectButton
+                               : (!self->_cancelButton.hidden ? self->_cancelButton : nil);
+        self->_actionFocusGuide.preferredFocusEnvironments = actionButton ? @[ actionButton ] : @[];
+        self->_actionFocusGuide.enabled = (actionButton != nil);
+#endif
+
+        [self refreshPreferredFocus];
     });
 }
 
+// Request the focus update from the navigation controller rather than self:
+// -setNeedsFocusUpdate only works from the environment that currently holds focus,
+// and the gear lives in the nav bar (outside self.view). The nav controller
+// contains both the bar and our content, so it can always redirect to the button.
+- (void)refreshPreferredFocus {
+    UIViewController* env = self.navigationController ?: self;
+    [env setNeedsFocusUpdate];
+    [env updateFocusIfNeeded];
+}
+
+- (NSArray<id<UIFocusEnvironment>> *)preferredFocusEnvironments {
+    // Prefer the visible action button: Connect (error/ended) or Cancel (connecting),
+    // falling back to the gear so focus is never left on nothing.
+    if (!_connectButton.hidden) return @[ _connectButton ];
+    if (!_cancelButton.hidden)  return @[ _cancelButton ];
+    return self.navigationController.navigationBar ? @[ self.navigationController.navigationBar ] : @[];
+}
+
 - (void)showStreamEndedState {
-    [self updateUI:GLStateStreamEnded status:@"Stream Ended" detail:@"Tap Retry to reconnect"];
+    [self updateUI:GLStateStreamEnded status:@"Stream Ended" detail:@"Tap Connect to reconnect"];
 }
 
 #pragma mark - Connection Entry Point
@@ -310,7 +391,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (gen == self->_connectGeneration) {
-                self->_statusLabel.text = @"Getting server info…";
+                self->_statusLabel.text = @"Connecting to server…";
             }
         });
 
@@ -355,7 +436,7 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (gen == self->_connectGeneration) {
-            self->_statusLabel.text = @"Loading apps…";
+            self->_statusLabel.text = @"Loading app list…";
         }
     });
 
@@ -432,10 +513,8 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
     if (bitrate == 0) bitrate = 10000;
 
     _streamConfig.frameRate = (int)fps;
-    if (@available(iOS 10.3, *)) {
-        if (_streamConfig.frameRate > (int)[UIScreen mainScreen].maximumFramesPerSecond) {
-            _streamConfig.frameRate = (int)[UIScreen mainScreen].maximumFramesPerSecond;
-        }
+    if (_streamConfig.frameRate > (int)[UIScreen mainScreen].maximumFramesPerSecond) {
+        _streamConfig.frameRate = (int)[UIScreen mainScreen].maximumFramesPerSecond;
     }
     _streamConfig.height = (int)height;
     _streamConfig.width = (int)width;
@@ -612,12 +691,12 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
         return;
     }
     [self cancelInFlightConnection];
-    [self updateUI:GLStateError status:@"Connection Cancelled" detail:@"Tap Retry to try again."];
+    [self updateUI:GLStateError status:@"Connection Cancelled" detail:@"Tap Connect to try again."];
 }
 
 #pragma mark - Button Actions
 
-- (void)retryTapped {
+- (void)connectTapped {
     [self startConnection];
 }
 
@@ -711,3 +790,4 @@ typedef NS_ENUM(NSInteger, GLStreamingState) {
 }
 
 @end
+

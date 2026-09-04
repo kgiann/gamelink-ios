@@ -50,4 +50,7 @@ typedef struct {
 @property (nonatomic)                   BOOL reportedArrival;
 @property (nonatomic)                   Controller* _Nullable mergedWithController;
 
+// Source-flag -> target-flag remapping for this controller (nil == identity).
+@property (nonatomic, retain)           NSDictionary<NSNumber *, NSNumber *>* _Nullable buttonRemap;
+
 @end

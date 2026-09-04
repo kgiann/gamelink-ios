@@ -1,0 +1,3 @@
+- [X] Quit host app on stream end even on user swipe
+- [X] Be able to cancel connecting stage
+- [X] Settings save doesn't show on tvos

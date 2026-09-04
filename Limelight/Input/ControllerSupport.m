@@ -8,6 +8,7 @@
 
 #import "ControllerSupport.h"
 #import "Controller.h"
+#import "ControllerButtonRemap.h"
 
 #import "OnScreenControls.h"
 
@@ -51,6 +52,11 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 // UPDATE_BUTTON_FLAG(controller, flag, pressed)
 #define UPDATE_BUTTON_FLAG(controller, x, y) \
 ((y) ? [self setButtonFlag:controller flags:x] : [self clearButtonFlag:controller flags:x])
+
+// Like UPDATE_BUTTON_FLAG, but routes the source flag through the controller's
+// remapping table before applying it.
+#define UPDATE_REMAP_BUTTON_FLAG(controller, srcFlag, pressed) \
+UPDATE_BUTTON_FLAG(controller, [self mapFlag:(srcFlag) forController:(controller)], (pressed))
 
 #define MAX_MAGNITUDE(x, y) (abs(x) > abs(y) ? (x) : (y))
 
@@ -316,6 +322,16 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     }
 }
 
+-(int) mapFlag:(int)flag forController:(Controller*)controller
+{
+    NSDictionary<NSNumber *, NSNumber *>* remap = controller.buttonRemap;
+    if (remap == nil) {
+        return flag;
+    }
+    NSNumber* mapped = remap[@(flag)];
+    return mapped != nil ? mapped.intValue : flag;
+}
+
 -(uint16_t) getActiveGamepadMask
 {
     return (_multiController ? _controllerNumbers : 1) | (_oscEnabled ? 1 : 0);
@@ -396,6 +412,9 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             }
             
             controller.extendedGamepad.valueChangedHandler = NULL;
+
+            // Remove the physical-profile button handlers we installed
+            [self setExtendedButtonHandlersForController:controller enable:NO];
         }
     }
 }
@@ -727,76 +746,56 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 unsigned char leftTrigger, rightTrigger;
                 
                 if (self->_swapABXYButtons) {
-                    UPDATE_BUTTON_FLAG(limeController, B_FLAG, gamepad.buttonA.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, A_FLAG, gamepad.buttonB.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, Y_FLAG, gamepad.buttonX.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, X_FLAG, gamepad.buttonY.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, B_FLAG, gamepad.buttonA.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, A_FLAG, gamepad.buttonB.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, Y_FLAG, gamepad.buttonX.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, X_FLAG, gamepad.buttonY.pressed);
                 }
                 else {
-                    UPDATE_BUTTON_FLAG(limeController, A_FLAG, gamepad.buttonA.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, B_FLAG, gamepad.buttonB.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, X_FLAG, gamepad.buttonX.pressed);
-                    UPDATE_BUTTON_FLAG(limeController, Y_FLAG, gamepad.buttonY.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, A_FLAG, gamepad.buttonA.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, B_FLAG, gamepad.buttonB.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, X_FLAG, gamepad.buttonX.pressed);
+                    UPDATE_REMAP_BUTTON_FLAG(limeController, Y_FLAG, gamepad.buttonY.pressed);
                 }
-                
-                UPDATE_BUTTON_FLAG(limeController, UP_FLAG, gamepad.dpad.up.pressed);
-                UPDATE_BUTTON_FLAG(limeController, DOWN_FLAG, gamepad.dpad.down.pressed);
-                UPDATE_BUTTON_FLAG(limeController, LEFT_FLAG, gamepad.dpad.left.pressed);
-                UPDATE_BUTTON_FLAG(limeController, RIGHT_FLAG, gamepad.dpad.right.pressed);
-                
-                UPDATE_BUTTON_FLAG(limeController, LB_FLAG, gamepad.leftShoulder.pressed);
-                UPDATE_BUTTON_FLAG(limeController, RB_FLAG, gamepad.rightShoulder.pressed);
-                
+
+                UPDATE_REMAP_BUTTON_FLAG(limeController, UP_FLAG, gamepad.dpad.up.pressed);
+                UPDATE_REMAP_BUTTON_FLAG(limeController, DOWN_FLAG, gamepad.dpad.down.pressed);
+                UPDATE_REMAP_BUTTON_FLAG(limeController, LEFT_FLAG, gamepad.dpad.left.pressed);
+                UPDATE_REMAP_BUTTON_FLAG(limeController, RIGHT_FLAG, gamepad.dpad.right.pressed);
+
+                UPDATE_REMAP_BUTTON_FLAG(limeController, LB_FLAG, gamepad.leftShoulder.pressed);
+                UPDATE_REMAP_BUTTON_FLAG(limeController, RB_FLAG, gamepad.rightShoulder.pressed);
+
                 // Yay, iOS 12.1 now supports analog stick buttons
                 if (@available(iOS 12.1, tvOS 12.1, *)) {
                     if (gamepad.leftThumbstickButton != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, LS_CLK_FLAG, gamepad.leftThumbstickButton.pressed);
+                        UPDATE_REMAP_BUTTON_FLAG(limeController, LS_CLK_FLAG, gamepad.leftThumbstickButton.pressed);
                     }
                     if (gamepad.rightThumbstickButton != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, RS_CLK_FLAG, gamepad.rightThumbstickButton.pressed);
+                        UPDATE_REMAP_BUTTON_FLAG(limeController, RS_CLK_FLAG, gamepad.rightThumbstickButton.pressed);
                     }
                 }
-                
+
                 if (@available(iOS 13.0, tvOS 13.0, *)) {
                     // Options button is optional (only present on Xbox One S and PS4 gamepads)
                     if (gamepad.buttonOptions != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, BACK_FLAG, gamepad.buttonOptions.pressed);
+                        UPDATE_REMAP_BUTTON_FLAG(limeController, BACK_FLAG, gamepad.buttonOptions.pressed);
 
                         // For older MFi gamepads, the menu button will already be handled by
                         // the controllerPausedHandler.
-                        UPDATE_BUTTON_FLAG(limeController, PLAY_FLAG, gamepad.buttonMenu.pressed);
+                        UPDATE_REMAP_BUTTON_FLAG(limeController, PLAY_FLAG, gamepad.buttonMenu.pressed);
                     }
                 }
-                
+
                 if (@available(iOS 14.0, tvOS 14.0, *)) {
-                    // Home/Guide button is optional (only present on Xbox One S and PS4 gamepads)
-                    if (gamepad.buttonHome != nil) {
-                        UPDATE_BUTTON_FLAG(limeController, SPECIAL_FLAG, gamepad.buttonHome.pressed);
-                    }
-                    
-                    // Xbox One/Series controllers
-                    if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleOne]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE1_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleOne].pressed);
-                    }
-                    if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleTwo]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE2_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleTwo].pressed);
-                    }
-                    if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleThree]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE3_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleThree].pressed);
-                    }
-                    if (gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleFour]) {
-                        UPDATE_BUTTON_FLAG(limeController, PADDLE4_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputXboxPaddleFour].pressed);
-                    }
-                    if (@available(iOS 15.0, tvOS 15.0, *)) {
-                        if (gamepad.controller.physicalInputProfile.buttons[GCInputButtonShare]) {
-                            UPDATE_BUTTON_FLAG(limeController, MISC_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputButtonShare].pressed);
-                        }
-                    }
-                    
-                    // DualShock/DualSense controllers
-                    if (gamepad.controller.physicalInputProfile.buttons[GCInputDualShockTouchpadButton]) {
-                        UPDATE_BUTTON_FLAG(limeController, TOUCHPAD_FLAG, gamepad.controller.physicalInputProfile.buttons[GCInputDualShockTouchpadButton].pressed);
-                    }
+                    // Home/Guide, the Xbox paddles, the Share/Capture button and the
+                    // DualSense touchpad button are NOT part of the extended gamepad
+                    // profile, so this handler only samples them when some other element
+                    // changes. They are instead driven by dedicated pressedChangedHandlers
+                    // (see setExtendedButtonHandlersForController:) so isolated presses
+                    // register reliably and can be remapped.
+
+                    // DualShock/DualSense touchpad surfaces (touch positions)
                     if (gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadOne]) {
                         [self handleControllerTouchpad:limeController
                                                  touch:gamepad.controller.physicalInputProfile.dpads[GCInputDualShockTouchpadOne]
@@ -823,9 +822,76 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
                 [self updateTriggers:limeController left:leftTrigger right:rightTrigger];
                 [self updateFinished:limeController];
             };
+
+            // Wire up the buttons that live only in the physical input profile.
+            [self setExtendedButtonHandlersForController:controller enable:YES];
         }
     } else {
         Log(LOG_W, @"Tried to register controller callbacks on NULL controller");
+    }
+}
+
+// Home/Guide, paddles, the Share/Capture button and the DualSense touchpad button
+// are not part of the extended gamepad profile, so we install per-button
+// pressedChangedHandlers to guarantee isolated presses are delivered (and can be
+// remapped). Pass enable:NO to remove them.
+-(void) setExtendedButtonHandlersForController:(GCController*)controller enable:(BOOL)enable
+{
+    if (@available(iOS 14.0, tvOS 14.0, *)) {
+        GCPhysicalInputProfile* profile = controller.physicalInputProfile;
+        int playerIndex = (int)controller.playerIndex;
+
+        // Simple momentary buttons: source flag is fixed, target comes from the remap.
+        NSDictionary<NSString*, NSNumber*>* simpleButtons = @{
+            GCInputButtonHome:              @(MISC_FLAG),
+            GCInputXboxPaddleOne:           @(PADDLE1_FLAG),
+            GCInputXboxPaddleTwo:           @(PADDLE2_FLAG),
+            GCInputXboxPaddleThree:         @(PADDLE3_FLAG),
+            GCInputXboxPaddleFour:          @(PADDLE4_FLAG),
+            GCInputDualShockTouchpadButton: @(TOUCHPAD_FLAG),
+        };
+
+        for (NSString* inputName in simpleButtons) {
+            GCControllerButtonInput* button = profile.buttons[inputName];
+            if (button == nil) {
+                continue;
+            }
+            if (!enable) {
+                button.pressedChangedHandler = nil;
+                continue;
+            }
+            int sourceFlag = simpleButtons[inputName].intValue;
+            button.pressedChangedHandler = ^(GCControllerButtonInput* b, float value, BOOL pressed) {
+                Controller* lime = [self->_controllers objectForKey:@(playerIndex)];
+                if (lime == nil) {
+                    return;
+                }
+                UPDATE_REMAP_BUTTON_FLAG(lime, sourceFlag, pressed);
+                [self updateFinished:lime];
+            };
+        }
+
+        // Share/Capture: momentary if the user remapped it, otherwise the default
+        // tap = Guide, double-tap = stream menu behavior.
+        if (@available(iOS 15.0, tvOS 15.0, *)) {
+            GCControllerButtonInput* shareButton = profile.buttons[GCInputButtonShare];
+            if (shareButton != nil) {
+                if (!enable) {
+                    shareButton.pressedChangedHandler = nil;
+                }
+                else {
+                    shareButton.pressedChangedHandler = ^(GCControllerButtonInput* b, float value, BOOL pressed) {
+                        Controller* lime = [self->_controllers objectForKey:@(playerIndex)];
+                        if (lime == nil) {
+                            return;
+                        }
+                        int target = [self mapFlag:SPECIAL_FLAG forController:lime];
+                        UPDATE_BUTTON_FLAG(lime, target, pressed);
+                        [self updateFinished:lime];
+                    };
+                }
+            }
+        }
     }
 }
 
@@ -981,6 +1047,10 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
             limeController.playerIndex = i;
             limeController.supportedEmulationFlags = EMULATING_SPECIAL | EMULATING_SELECT;
             limeController.gamepad = controller;
+
+            // Load any saved button remapping for this controller model
+            limeController.buttonRemap = [ControllerButtonRemap mappingForControllerKey:
+                                          [ControllerButtonRemap keyForGamepad:controller]];
 
             // If this is player 0, it shares state with the OSC
             limeController.mergedWithController = _oscController;

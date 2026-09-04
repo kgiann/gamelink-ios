@@ -11,6 +11,7 @@
 @interface DiscoveryWorker : NSOperation
 
 - (id) initWithHost:(TemporaryHost*)host uniqueId:(NSString*)uniqueId;
+- (BOOL) discoverHostWithError:(NSString **)error;
 - (void) discoverHost;
 - (TemporaryHost*) getHost;
 

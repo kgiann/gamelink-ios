@@ -43,6 +43,7 @@
     UILabel *_stageLabel;
     UILabel *_tipLabel;
     UIActivityIndicatorView *_spinner;
+    UIImageView *_backgroundImageView;
     StreamView *_streamView;
     UIScrollView *_scrollView;
     BOOL _userIsInteracting;
@@ -85,6 +86,18 @@
     
     _settings = [[[DataManager alloc] init] getSettings];
     
+    // Show the launch background image behind the connecting UI. It sits above
+    // the (still empty) stream view and is removed once video content appears.
+    _backgroundImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+    _backgroundImageView.image = [UIImage imageNamed:@"LaunchBackground"];
+    _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _backgroundImageView.clipsToBounds = YES;
+    [_backgroundImageView setUserInteractionEnabled:NO];
+    _backgroundImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:_backgroundImageView];
+
+//    self.view.backgroundColor = UIColor.blackColor;
+
     _stageLabel = [[UILabel alloc] init];
     [_stageLabel setUserInteractionEnabled:NO];
     [_stageLabel setText:[NSString stringWithFormat:@"Starting %@...", self.streamConfig.appName]];
@@ -622,6 +635,8 @@
 
 - (void) videoContentShown {
     [_spinner stopAnimating];
+    [_backgroundImageView removeFromSuperview];
+    _backgroundImageView = nil;
     [self.view setBackgroundColor:[UIColor blackColor]];
 }
 
